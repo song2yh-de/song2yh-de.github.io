@@ -1,0 +1,1533 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>eSMART 화면 시안</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,300..500,0..1,0&display=block">
+<style>
+/* Layout: 1920×919 eSMART 앱 캔버스(LNB 200/58 + 컨텐츠)를 화면 폭에 맞춰 축소 표시. 색상은 eSMART Figma 변수 그대로, 앱과 같은 라이트 단일 테마 */
+:root{
+  color-scheme: light;
+  --brand-50:#eaf8ff; --brand-200:#bedfff; --brand-500:#418bed; --brand-600:#1b6fd5; --brand-700:#0058bc; --brand-800:#004295; --brand-900:#00357a; --brand-950:#00285a;
+  --gray-50:#f6f6f6; --gray-100:#eeeeee; --gray-200:#dddddd; --gray-300:#c6c6c6; --gray-400:#ababab; --gray-500:#8b8b8b; --gray-600:#727272; --gray-700:#595959; --gray-800:#474747; --gray-900:#393939; --gray-950:#2a2a2a;
+  --neutral-50:#f3f7fc; --neutral-100:#e9eef6; --neutral-200:#d6dee8; --neutral-400:#a2acb9; --neutral-600:#6a737f; --neutral-700:#525a65;
+  --red-50:#fff2ef; --red-200:#ffcac2; --red-500:#e85047; --red-600:#cd2828; --red-700:#a71217;
+  --green-50:#e8fff1; --green-200:#b8ecc1; --green-600:#1d8843;
+  --amber-50:#fff4e1; --amber-200:#ffd599; --amber-600:#9f6300;
+  --white:#ffffff;
+  --text-primary:var(--gray-950); --text-secondary:var(--gray-700); --text-tertiary:var(--gray-500); --text-tit:var(--brand-900);
+  --border-default:var(--neutral-200);
+  --grid-thead-bg:var(--neutral-600); --grid-thead-border:var(--neutral-700); --grid-tbody-border:var(--gray-200); --grid-selected:var(--green-50); --grid-hover:var(--gray-100);
+  --lnb-bg:var(--brand-800); --lnb-stats:var(--brand-900); --lnb-open:var(--brand-700); --lnb-selected:var(--brand-600); --lnb-btn:var(--brand-950);
+  --dim:rgba(0,0,0,.5);
+  --accent:#bf7b00; --grid-line:#e9eef6;
+  --page-bg:#dfe5ee;
+  --font:'Pretendard','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--page-bg);color:var(--text-primary);font-family:var(--font);-webkit-font-smoothing:antialiased}
+.ms{font-family:'Material Symbols Outlined';font-weight:400;font-style:normal;font-size:18px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;user-select:none;flex:none;width:1em;overflow:hidden}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--brand-600);outline-offset:1px}
+
+/* ── 바깥 뷰어 ── */
+.viewer{padding-block:20px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px;max-width:1960px;margin:0 auto}
+.viewer-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.viewer-head h1{margin:0;font-size:20px;font-weight:700;color:var(--brand-900);text-wrap:balance}
+.viewer-head p{margin:4px 0 0;font-size:13px;color:var(--text-secondary);line-height:1.5}
+.zoom{display:inline-flex;border:1px solid var(--gray-300);border-radius:4px;overflow:hidden;background:var(--white)}
+.zoom button{border:0;background:none;padding:6px 12px;font-size:13px;color:var(--gray-600)}
+.zoom button+button{border-left:1px solid var(--gray-300)}
+.zoom button[aria-pressed="true"]{background:var(--neutral-50);color:var(--brand-700);font-weight:600}
+.snav{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.snav button{height:30px;padding:0 10px;border:1px solid var(--gray-300);border-radius:4px;background:var(--white);color:var(--gray-800);font-size:13px;display:inline-flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.snav button small{font-size:12px;color:var(--gray-500)}
+.snav button:hover{border-color:var(--brand-600)}
+.snav button[aria-current="true"]{background:var(--brand-700);border-color:var(--brand-700);color:var(--white)}
+.snav button[aria-current="true"] small{color:var(--brand-200)}
+.stage-wrap{position:relative;width:100%;overflow:hidden;border-radius:6px;box-shadow:0 1px 2px rgba(0,40,90,.12),0 8px 28px rgba(0,40,90,.14);background:var(--white)}
+.stage-wrap.actual{overflow-x:auto}
+.stage{width:1920px;height:919px;transform-origin:0 0;display:flex;position:relative;font-size:14px;overflow:hidden;background:var(--white)}
+.note{font-size:12px;color:var(--text-secondary)}
+
+/* ── LNB ── */
+.lnb{width:200px;transition:width .2s ease;overflow:hidden;flex:none;background:var(--lnb-bg);color:var(--white);display:flex;flex-direction:column}
+.lnb-logo{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.lnb-logo button{background:none;border:0;color:var(--white);padding:0;display:flex}
+.lnb-info{background:var(--lnb-stats);padding:16px;display:flex;flex-direction:column;gap:8px}
+.lnb-hello{white-space:nowrap;letter-spacing:-.2px;display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.lnb-hello b{font-weight:700}
+.lnb-last{font-size:10px;color:var(--gray-300);margin-top:1px}
+.lnb-stats{display:flex;background:rgba(0,0,0,.15);border:1px solid rgba(0,0,0,.3);border-radius:4px;padding:6px 8px}
+.lnb-stats div{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+.lnb-stats strong{font-size:16px;font-weight:500;line-height:24px}
+.lnb-stats span{font-size:10px;line-height:14px;color:var(--gray-300)}
+.lnb-menu{height:100%;padding:16px 12px 16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+/* ScrollPanel (PrimeReact 10.9.7 p-scrollpanel 방식): 네이티브 스크롤바 숨기고 콘텐츠 위에 띄우는 막대 */
+.sp{position:relative;overflow:hidden}
+.sp-content{scrollbar-width:none;-ms-overflow-style:none}
+.sp-content::-webkit-scrollbar{display:none}
+.sp-bar{position:absolute;top:0;right:3px;width:6px;border-radius:3px;background:var(--sp-bar,rgba(0,0,0,.25));opacity:0;transition:opacity .25s linear,background .15s;cursor:pointer;z-index:2;touch-action:none}
+.sp:hover .sp-bar,.sp.act .sp-bar,.sp-bar.drag{opacity:1}
+.sp-bar:hover,.sp-bar.drag{background:var(--sp-bar-h,rgba(0,0,0,.4))}
+.sp.noy .sp-bar:not(.sp-x),.sp.nox .sp-x{display:none}
+.sp-x{top:auto;bottom:3px;left:0;right:auto;height:6px;width:auto}
+.gsp{flex:1;min-height:0;display:flex;flex-direction:column;border-bottom:1px solid var(--grid-tbody-border)}
+.gsp>.gridbox{flex:1;min-height:0;border-bottom:0}
+.lnb-sp{flex:1;min-height:0;--sp-bar:rgba(255,255,255,.35);--sp-bar-h:rgba(255,255,255,.6)}
+.lnb.closed .lnb-sp .sp-bar{right:2px;width:4px}
+.m1{white-space:nowrap;display:flex;align-items:center;justify-content:space-between;height:34px;padding:8px;border:0;background:none;color:var(--white);border-radius:4px;font-size:14px;width:100%;text-align:left}
+.m1:hover{background:rgba(0,0,0,.15)}
+.m1 .lbl{display:flex;align-items:center;gap:4px}
+.m1 .chev{color:var(--neutral-400);font-size:16px;transition:transform .15s}
+.grp.open .m1{background:var(--lnb-selected);border-radius:4px 4px 0 0}
+.grp.open .m1 .chev{color:var(--white);transform:rotate(180deg)}
+.sub{display:none;background:var(--lnb-open);padding:8px 0;border-radius:0 0 4px 4px}
+.grp.open .sub{display:block}
+.sub a{display:flex;align-items:center;height:32px;padding:0 0 0 20px;font-size:12px;color:var(--white);text-decoration:none;white-space:nowrap}
+.sub a:hover{background:rgba(0,0,0,.15)}
+.lnb-bottom{padding:16px;display:flex;flex-direction:column;gap:10px}
+.lnb-bottom .links{border-top:1px solid var(--lnb-open);padding-top:16px;display:flex;flex-direction:column;gap:8px}
+.lnb-bottom .links button{display:flex;align-items:center;gap:4px;height:24px;padding:4px 8px;background:none;border:0;color:var(--white);font-size:12px}
+.lnb-bottom .links .ms{font-size:14px}
+.logout{height:24px;border:0;border-radius:4px;background:var(--lnb-btn);color:var(--white);font-size:12px}
+.mini{display:none}
+.lnb.closed{width:58px}
+.lnb.closed .full,.lnb.closed .txt,.lnb.closed .chev,.lnb.closed .lnb-last,.lnb.closed .lnb-logo svg{display:none}
+.lnb.closed .mini{display:inline-flex}
+.lnb.closed .lnb-logo{justify-content:center;padding:0}
+.lnb.closed .lnb-info{padding:16px 0;align-items:center}
+.lnb.closed .lnb-hello{justify-content:center;gap:0}
+.lnb.closed .lnb-stats{flex-direction:column;width:46px;padding:6px 2px;gap:10px}
+.lnb.closed .lnb-menu{align-items:center}
+.lnb.closed .m1{width:34px;justify-content:center;border-radius:8px}
+.lnb.closed .grp.open .m1{border-radius:8px}
+.lnb.closed .grp.open .sub{display:none}
+.lnb.closed .lnb-bottom{padding:16px 8px;align-items:center}
+.lnb.closed .lnb-bottom .links{width:42px;align-items:center}
+.lnb.closed .lnb-bottom .links button{width:42px;justify-content:center;padding:4px 0}
+.lnb.closed .logout{width:42px;display:flex;align-items:center;justify-content:center}
+.lnb.closed .logout .ms{font-size:16px}
+
+/* ── 컨텐츠 공통 ── */
+.content{flex:1;display:flex;flex-direction:column;min-width:0}
+.ptabs{height:41px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--border-default);background:var(--white)}
+.ptab-list{display:flex;gap:8px;height:40px}
+.ptab{display:flex;align-items:center;gap:24px;padding:0 8px 0 16px;height:40px;border:0;background:none;color:var(--gray-500);font-size:14px;position:relative;white-space:nowrap}
+.ptab .x{font-size:16px;color:var(--gray-300);border-radius:2px}
+.ptab .x:hover{color:var(--gray-700);background:var(--gray-100)}
+.ptab.on{color:var(--brand-600);font-weight:600}
+.ptab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--brand-600)}
+.ptab-nav{display:flex;gap:8px}
+.ibtn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--gray-300);border-radius:4px;background:var(--white);color:var(--gray-900);padding:0;flex:none}
+.ibtn:hover{background:var(--gray-100)}
+.ibtn .ms{font-size:18px}
+.xls{color:#1d6f42}
+.screen{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:8px 16px 16px;background:var(--neutral-50)}
+.row{display:flex;gap:10px;min-height:0}
+.col{display:flex;flex-direction:column;min-height:0;min-width:0}
+.pn{background:var(--white);border:1px solid var(--border-default);padding:16px;display:flex;flex-direction:column;gap:8px;min-height:0;min-width:0}
+.pn.nob{border:0}
+.grow{flex:1;min-height:0;min-width:0}
+.label{width:80px;flex:none;letter-spacing:-.3px;font-size:14px;font-weight:600;color:var(--gray-900);white-space:nowrap}
+.label::before{content:"•";margin-right:4px}
+.label.auto{width:auto}
+.inp,.sel,.ta{height:28px;border:1px solid var(--gray-300);border-radius:4px;background:var(--white);font:inherit;font-size:14px;color:var(--gray-900);padding:0 8px;min-width:0}
+.inp::placeholder,.ta::placeholder{color:var(--gray-500)}
+.inp:hover,.sel:hover,.ta:hover{border-color:var(--neutral-400)}
+.inp:focus,.sel:focus,.ta:focus{outline:none;border-color:var(--brand-600)}
+.inp[readonly]{background:var(--gray-50);color:var(--gray-700);border-color:var(--gray-300)}
+.ta{height:auto;padding:6px 8px;resize:none;line-height:1.45}
+.sel{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23393939' stroke-width='1.3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer}
+.date{position:relative;display:inline-flex;align-items:center;flex:none}
+.date .ms{position:absolute;left:8px;font-size:16px;color:var(--gray-900);pointer-events:none}
+.date .inp{padding-left:28px;width:140px;font-variant-numeric:tabular-nums}
+.tilde{color:var(--gray-700);font-size:14px;flex:none}
+.rad{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--gray-900);cursor:pointer;white-space:nowrap}
+.rdo{appearance:none;-webkit-appearance:none;width:16px;height:16px;margin:0;border:1px solid var(--gray-400);border-radius:50%;background:var(--white);display:inline-grid;place-content:center;cursor:pointer}
+.rdo:checked{border-color:var(--brand-700)}
+.rdo:checked::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand-700)}
+.chk{appearance:none;-webkit-appearance:none;width:16px;height:16px;margin:0;border:1px solid var(--gray-400);border-radius:3px;background:var(--white);vertical-align:middle;cursor:pointer;display:inline-grid;place-content:center;flex:none}
+.chk:checked{background:var(--brand-700);border-color:var(--brand-700)}
+.chk:checked::after{content:"";width:8px;height:4px;border:solid var(--white);border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.grid th .chk{border-color:var(--white)}
+.btn{height:28px;display:inline-flex;align-items:center;justify-content:center;gap:4px;border-radius:4px;font-size:14px;white-space:nowrap;padding:0 12px;flex:none}
+.btn .ms{font-size:16px}
+.btn-outline{border:1px solid var(--gray-300);background:var(--white);color:var(--gray-900)}
+.btn-outline:hover{background:var(--gray-100)}
+.btn-sec{border:1px solid var(--brand-600);background:var(--white);color:var(--brand-800)}
+.btn-sec:hover{background:var(--brand-50);color:var(--brand-900)}
+.btn-danger-out{border:1px solid var(--red-500);background:var(--white);color:var(--red-700)}
+.btn-danger-out:hover{background:var(--red-50)}
+.btn-primary{border:0;background:var(--brand-700);color:var(--white)}
+.btn-primary:hover{background:var(--brand-800)}
+.btn-danger{border:0;background:var(--red-600);color:var(--white)}
+.btn-danger:hover{background:var(--red-700)}
+.btn-search{border:0;background:var(--brand-500);color:var(--white);padding:0 20px;min-width:80px}
+.btn-search:hover{background:var(--brand-600)}
+.btn-lg{padding:0 20px;min-width:77px}
+.btn:disabled,.btn:disabled:hover{background:var(--gray-50);color:var(--gray-300);border:1px solid var(--gray-100);cursor:default}
+.ghost{background:none;border:0;color:var(--gray-900);font-size:14px;display:inline-flex;align-items:center;gap:2px;padding:0}
+.vbar{width:1px;height:16px;background:var(--gray-300);flex:none}
+.tit{position:relative;font-size:18px;font-weight:700;color:var(--text-tit);line-height:24px;padding-left:6px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.tit::before{content:"";position:absolute;left:0;top:0;border-style:solid;border-width:6px 6px 0 0;border-color:var(--text-tit) transparent transparent transparent}
+.tit small{font-size:13px;font-weight:400;color:var(--text-secondary)}
+.tit small b{color:var(--brand-700);font-weight:600}
+.total{font-size:12px;color:var(--gray-500);white-space:nowrap}
+.total b{color:var(--gray-900);font-weight:600}
+.lh{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px;flex:none}
+.acts{display:flex;align-items:center;gap:8px}
+/* 검색영역 */
+.sform{background:var(--white);border:1px solid var(--border-default);border-radius:8px 8px 0 0;padding:16px 24px;display:flex;gap:16px;flex:none}
+.sform.a{align-items:center;justify-content:space-between}
+.sform.b{flex-direction:column;gap:10px}
+.srow{display:flex;gap:24px;align-items:center;min-height:28px}
+.sf{display:flex;align-items:center;gap:8px;min-width:0}
+.sact{display:flex;gap:10px;flex:none}
+.sform.b .sact{justify-content:center;padding-top:10px}
+/* 그리드 */
+.gridbox{flex:1;min-height:0;overflow:auto;border-bottom:1px solid var(--grid-tbody-border);display:flex;flex-direction:column;background:var(--white)}
+table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%;font-size:14px;flex:none}
+.grid th{position:sticky;top:0;z-index:1;height:28px;background:var(--grid-thead-bg);color:var(--white);font-size:12px;font-weight:600;border-right:1px solid var(--grid-thead-border);border-bottom:1px solid var(--grid-thead-border);padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid thead tr:nth-child(2) th{top:28px}
+.grid th:last-child{border-right:0}
+.grid th.br{border-right:1px solid var(--grid-thead-border)}
+.grid th .sort{display:inline-flex;align-items:center;gap:2px;background:none;border:0;color:inherit;font:inherit;padding:0}
+.grid th .sort .ms{font-size:14px}
+.grid td{letter-spacing:-.2px;height:34px;border-bottom:1px solid var(--grid-tbody-border);border-right:1px solid var(--grid-tbody-border);color:var(--gray-800);text-align:center;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.grid td:last-child{border-right:0}
+.grid tbody tr{cursor:pointer}
+.grid.nosel tbody tr{cursor:default}
+.grid tbody tr:hover td{background:var(--grid-hover)}
+.grid tbody tr.sel td{background:var(--grid-selected)}
+.grid td.l{text-align:left}
+.grid td.r{text-align:right}
+.gempty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--gray-700);font-size:14px;min-height:120px;border-left:1px solid var(--grid-tbody-border);border-right:1px solid var(--grid-tbody-border)}
+.ic{font-size:18px;color:var(--brand-700);vertical-align:middle}
+.st{display:inline-flex;flex-direction:column;line-height:0;vertical-align:middle}
+.st i{display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;margin:1px 0}
+.st .u{border-bottom:5px solid var(--gray-300)}
+.st .d{border-top:5px solid var(--gray-300)}
+.st.h .u{border-bottom-color:var(--red-600)}
+.st.l .d{border-top-color:var(--brand-600)}
+.chip{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:3px;font-size:12px;font-weight:500}
+.chip.ing{background:var(--amber-50);color:var(--amber-600)}
+.chip.done{background:var(--gray-100);color:var(--gray-700)}
+.chip.high{background:var(--red-50);color:var(--red-600)}
+.chip.low{background:var(--brand-50);color:var(--brand-600)}
+.chip.info{background:var(--brand-50);color:var(--brand-700)}
+.chip.ok{background:var(--green-50);color:var(--green-600)}
+.fg-red{color:var(--red-600)!important;font-weight:500}
+.fg-blue{color:var(--brand-600)!important;font-weight:500}
+.fg-muted{color:var(--gray-500)!important}
+.pager{display:flex;justify-content:center;align-items:center;gap:4px;height:24px;flex:none}
+.pager button{min-width:24px;height:24px;border:0;background:none;border-radius:12px;color:var(--gray-800);font-size:12px;padding:0 4px;font-variant-numeric:tabular-nums}
+.pager button:hover{background:var(--gray-100)}
+.pager button.on{background:var(--brand-50);color:var(--brand-700);font-weight:600}
+.pager button .ms{font-size:16px;color:var(--gray-400)}
+/* 상세 테이블 */
+.dtb{border:1px solid var(--border-default);display:flex;flex-direction:column;flex:none}
+.dr{display:flex;min-height:34px;border-bottom:1px solid var(--border-default)}
+.dr:last-child{border-bottom:0}
+.df{display:flex;min-width:0}
+.df+.df{border-left:1px solid var(--border-default)}
+.dth{width:140px;flex:none;background:var(--neutral-50);padding:0 8px;display:flex;align-items:center;font-size:14px;color:var(--gray-900);border-right:1px solid var(--border-default)}
+.dth.req::before{content:"*";color:var(--red-600);margin-right:4px;font-weight:700}
+.dtd{flex:1;min-width:0;display:flex;align-items:center;gap:4px;padding:3px 8px;background:var(--white)}
+.dtd.v{flex-direction:column;align-items:stretch;justify-content:center;gap:4px}
+.dtd .inp,.dtd .sel,.dtd .ta{flex:1;width:100%}
+.dtd .hint{font-size:12px;color:var(--gray-500)}
+.fctl{display:flex;gap:4px}
+.fctl .inp{flex:1}
+/* 영역 탭 */
+.atabs{display:flex;flex:none;height:34px}
+.atab{width:100px;height:34px;border:1px solid var(--gray-300);border-bottom-color:var(--brand-800);background:var(--white);color:var(--gray-500);font-size:14px;margin-left:-1px;flex:none}
+.atab:first-child{margin-left:0}
+.atab.on{border-color:var(--brand-800);border-bottom-color:var(--white);color:var(--brand-900);font-weight:600;border-radius:4px 4px 0 0;position:relative;z-index:1}
+.atab-line{flex:1;border-bottom:1px solid var(--brand-800)}
+.split{width:6px;flex:none;display:flex;align-items:center;justify-content:center;cursor:col-resize;background:var(--neutral-100)}
+.split::after{content:"";width:2px;height:20px;border-radius:1px;background:var(--neutral-400)}
+.errbox{flex:1;background:var(--red-50);display:flex;align-items:center;justify-content:center;color:var(--red-600);font-size:13px}
+
+.screen.hz{flex-direction:row}
+.tcol{width:28px;flex:none;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.ibtn.sec{border-color:var(--brand-600);color:var(--brand-700)}
+.ibtn.sec:hover{background:var(--brand-50)}
+.tit.stit{font-size:14px;color:var(--gray-900);padding-left:0}
+.tit.stit::before{display:none}
+.tree{flex:1;min-height:0;overflow:auto;border:1px solid var(--border-default);padding:8px}
+.tn{height:30px;display:flex;align-items:center;gap:4px;font-size:14px;color:var(--gray-900);cursor:pointer;border-radius:2px;white-space:nowrap}
+.tn:hover{background:var(--gray-100)}
+.tn.on{background:var(--brand-50);color:var(--brand-700);font-weight:600}
+.tn .tw{font-size:16px;transition:transform .15s}
+.tn .tw.op{transform:rotate(90deg)}
+.tw0{width:16px;flex:none}
+.label.req::before{content:"*";color:var(--red-600);font-weight:700}
+.perm{flex:1;display:flex;padding:24px 16px;min-height:235px}
+.perm .all{width:200px;flex:none}
+.plist{display:grid;grid-template-columns:repeat(5,210px);row-gap:19px;align-content:start}
+.kvt th{width:auto;text-align:center}
+.kvt td{text-align:center;cursor:pointer}
+.kvt tr:hover td{background:var(--gray-100)}
+.editor{flex:1;align-self:stretch;display:flex;flex-direction:column;border:1px solid var(--gray-300);border-radius:4px;min-height:0;margin:2px 0;background:var(--white)}
+.etb{display:flex;align-items:center;gap:2px;padding:4px 8px;border-bottom:1px solid var(--gray-300);background:var(--gray-50);flex:none}
+.esel{border:0;background:transparent;font:inherit;font-size:13px;height:26px;padding:0 4px;color:var(--gray-900);cursor:pointer}
+.etb button{width:26px;height:26px;border:0;background:none;border-radius:3px;color:var(--gray-900);display:inline-flex;align-items:center;justify-content:center;padding:0}
+.etb button:hover{background:var(--gray-200)}
+.etb .ms{font-size:18px}
+.esep{width:1px;height:16px;background:var(--gray-300);margin:0 4px}
+.ebody{flex:1;padding:10px 12px;overflow:auto;outline:none;font-size:14px;line-height:1.6;color:var(--gray-900)}
+.dtd .date .inp{width:100%}
+.mdlg{width:600px;background:var(--white);border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.25);display:flex;flex-direction:column}
+.mdlg-h{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border-default);font-size:16px;font-weight:700;color:var(--gray-950)}
+.mdlg-b{padding:16px;display:flex;flex-direction:column;gap:8px}
+.mdlg-f{display:flex;justify-content:center;gap:8px;padding:16px 0}
+.cdlg .cicon.warn{background:var(--amber-50)}
+.cdlg .cicon.warn .ms{color:var(--amber-600)}
+.cdlg .timer{font-size:14px;color:var(--gray-700);margin-top:4px}
+.cdlg .timer b{color:var(--amber-600);font-variant-numeric:tabular-nums}
+.chart17{flex:1;min-height:0;position:relative}
+.chart17 circle[data-i]{cursor:pointer}
+.ctip{position:absolute;pointer-events:none;background:var(--white);border:1px solid var(--border-default);border-radius:6px;box-shadow:0 4px 14px rgba(0,40,90,.15);padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--gray-700);white-space:nowrap;z-index:5}
+.ctip b{font-size:13px;color:var(--gray-950)}
+.ggrid{display:flex;flex-direction:column}
+.ghead{display:flex;height:28px;background:var(--grid-thead-bg);color:var(--white);font-size:12px;font-weight:600}
+.ghead>div{display:flex;align-items:center;justify-content:center;border-right:1px solid var(--grid-thead-border)}
+.ghead>div:last-child{border-right:0}
+.grow-r{display:flex;border-bottom:1px solid var(--grid-tbody-border);background:var(--white)}
+.gcell{display:flex;align-items:center;font-size:14px;color:var(--gray-800);border-right:1px solid var(--grid-tbody-border)}
+.sf15{padding:16px 24px;gap:10px}
+.sf15 .srow{gap:8px}
+.sf15 .srow>.inp,.sf15 .srow>.sel,.sf15 .srow>.date{flex:1;min-width:0}
+.sf15 .date .inp{width:100%}
+/* eSMART_01 전용 */
+.results{flex:1;min-height:0;display:flex;gap:10px;padding:8px 16px 0;background:var(--neutral-50)}
+.left{width:850px;flex:none;display:flex;flex-direction:column;min-height:0;border:1px solid var(--border-default);border-radius:8px 8px 0 0;overflow:hidden}
+.right{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;min-height:0;background:var(--white);border:1px solid var(--border-default);border-bottom:0;border-radius:8px 8px 0 0;overflow:hidden}
+.search{background:var(--white);border-bottom:1px solid var(--border-default);padding:16px 24px;display:flex;flex-direction:column;gap:20px}
+.filters{display:flex;flex-direction:column;gap:10px}
+.frow{display:flex;gap:40px;align-items:center;height:28px}
+.fgrp{display:flex;align-items:center;gap:8px;width:381px}
+.frow.full .fgrp{width:auto}
+.w293{width:293px}
+.dates{display:flex;align-items:center;gap:4px;width:293px}
+.dates .date .inp{width:138px}
+.dates em{font-style:normal;color:var(--gray-700);flex:1;text-align:center}
+.seg{display:inline-flex;height:28px}
+.seg button{min-width:59px;height:28px;border:1px solid var(--gray-200);background:var(--white);color:var(--gray-600);font-size:13px;padding:0 10px;margin-left:-1px;position:relative}
+.seg button:first-child{margin-left:0;border-radius:4px 0 0 4px}
+.seg button:last-child{border-radius:0 4px 4px 0}
+.seg button:hover{background:var(--neutral-50)}
+.seg button[aria-pressed="true"]{background:var(--neutral-50);color:var(--brand-700);border-color:var(--brand-700);font-weight:600;z-index:1}
+.actions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.actions .center{display:flex;gap:10px;grid-column:2}
+.actions .more{justify-self:end}
+.actions .more .ms{font-size:16px;transition:transform .15s}
+.actions .more[aria-expanded="true"] .ms{transform:rotate(180deg)}
+.list{flex:1;min-height:0;background:var(--white);padding:16px 16px 0;display:flex;flex-direction:column;gap:8px;border-top:6px solid var(--neutral-50)}
+.rhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border-default);height:44px;flex:none}
+.dtable{padding:0 16px;flex:none}
+.dt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}
+.dt th{width:100px;height:34px;background:var(--neutral-50);border:1px solid var(--border-default);font-weight:400;color:var(--gray-900);text-align:left;padding:0 8px}
+.dt td{height:34px;border:1px solid var(--border-default);padding:0 8px;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.rgrid{flex:1;min-height:0;padding:0 16px 8px;display:flex;flex-direction:column}
+
+/* Toast · ConfirmDialog */
+.toasts{position:absolute;top:52px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:30;width:360px}
+.toast{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:6px;border:1px solid var(--brand-200);background:var(--brand-50);box-shadow:0 4px 16px rgba(0,40,90,.16);animation:tin .2s ease-out}
+.toast .ms{font-size:20px;color:var(--brand-600);font-variation-settings:'FILL' 1}
+.toast.ok{border-color:var(--green-200);background:var(--green-50)}
+.toast.ok .ms{color:var(--green-600)}
+.toast.warn{border-color:var(--amber-200);background:var(--amber-50)}
+.toast.warn .ms{color:var(--amber-600)}
+.toast div{flex:1;min-width:0}
+.toast b{display:block;font-size:14px;color:var(--gray-950)}
+.toast p{margin:2px 0 0;font-size:13px;color:var(--gray-700);line-height:1.45}
+.toast button{background:none;border:0;padding:0;color:var(--gray-500);display:flex}
+.toast button .ms{font-size:18px;color:inherit;font-variation-settings:'FILL' 0}
+.dimmer{position:absolute;inset:0;background:var(--dim);display:flex;align-items:center;justify-content:center;z-index:40}
+.cdlg{width:400px;background:var(--white);border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.25);padding:28px 24px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.cdlg .cicon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--red-50);margin-bottom:4px}
+.cdlg .cicon .ms{font-size:28px;color:var(--red-600);font-variation-settings:'FILL' 1}
+.cdlg h3{margin:0;font-size:18px;font-weight:700;color:var(--gray-950)}
+.cdlg p{margin:0;font-size:14px;color:var(--gray-700);line-height:1.5}
+.cdlg .cbtns{display:flex;gap:8px;margin-top:16px}
+@keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.toast{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="viewer">
+  <div class="viewer-head">
+    <div>
+      <h1 id="vTitle">eSMART_01 통합결과조회</h1>
+      <p>Figma 「화면 레이아웃」 페이지 순서대로 옮긴 HTML 시안. 그리드 행 선택, 체크박스, 영역탭, 페이지, 조회·초기화·삭제 확인 등이 동작하며 데이터는 모두 샘플.</p>
+    </div>
+    <div class="zoom" role="group" aria-label="화면 배율">
+      <button type="button" id="zFit" aria-pressed="true">화면 맞춤</button>
+      <button type="button" id="zActual" aria-pressed="false">실제 크기 1920</button>
+    </div>
+  </div>
+  <nav class="snav" id="snav" aria-label="화면 목록"></nav>
+
+  <div class="stage-wrap" id="wrap">
+    <div class="stage" id="stage">
+      <aside class="lnb" aria-label="메뉴">
+        <div class="lnb-logo">
+          <svg width="48" height="24" viewBox="0 0 48 24" aria-label="SCL" role="img"><text x="1" y="16" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-weight="700" font-size="19" fill="#ffffff">SCL</text><path d="M4 21c10-5 24-7 41-12" stroke="#19a6ff" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+          <button type="button" id="lnbToggle" aria-label="메뉴 접기" aria-expanded="true"><span class="ms">menu</span></button>
+        </div>
+        <div class="lnb-info">
+          <div>
+            <div class="lnb-hello"><span class="full"><b>홍당무병원</b>님 반갑습니다.</span><span class="mini"><b>MY</b></span><span class="ms" style="font-size:16px">chevron_right</span></div>
+            <div class="lnb-last">최종접속일 : 2026-05-25</div>
+          </div>
+          <div class="lnb-stats">
+            <div><strong>23</strong><span>Critical<br>Value</span></div>
+            <div><strong>0</strong><span>감염병<br>신규보고</span></div>
+            <div><strong>2</strong><span>신규공지</span></div>
+          </div>
+        </div>
+        <div class="sp lnb-sp" data-sp><nav class="lnb-menu sp-content" id="menu"></nav><div class="sp-bar" aria-hidden="true"></div></div>
+        <div class="lnb-bottom">
+          <div class="links">
+            <button type="button" title="sms"><span class="ms">mail</span><span class="txt">sms</span></button>
+            <button type="button" title="help"><span class="ms">info</span><span class="txt">help</span></button>
+          </div>
+          <button type="button" class="logout" title="로그아웃"><span class="full">로그아웃</span><span class="ms mini">logout</span></button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="ptabs">
+          <div class="ptab-list" id="ptabs" role="tablist"></div>
+          <div class="ptab-nav">
+            <button type="button" class="ibtn" aria-label="이전 화면" id="tabPrev"><span class="ms">chevron_left</span></button>
+            <button type="button" class="ibtn" aria-label="다음 화면" id="tabNext"><span class="ms">chevron_right</span></button>
+          </div>
+        </div>
+
+        <!-- eSMART_01 -->
+        <div class="results" id="scr-eSMART_01" data-screen>
+          <section class="left">
+            <form class="search" id="searchForm" autocomplete="off">
+              <div class="filters">
+                <div class="frow full">
+                  <div class="fgrp">
+                    <span class="label">기간</span>
+                    <select class="sel" id="dateType" style="width:200px"><option>접수일자</option><option>보고일자</option></select>
+                    <div class="seg" id="period" role="group" aria-label="기간 선택"></div>
+                  </div>
+                </div>
+                <div class="frow">
+                  <div class="fgrp">
+                    <span class="label">날짜</span>
+                    <div class="dates">
+                      <label class="date"><span class="ms">calendar_today</span><input class="inp" id="dFrom" placeholder="YYYY-MM-DD" aria-label="시작일"></label>
+                      <em>~</em>
+                      <label class="date"><span class="ms">calendar_today</span><input class="inp" id="dTo" placeholder="YYYY-MM-DD" aria-label="종료일"></label>
+                    </div>
+                  </div>
+                  <div class="fgrp">
+                    <span class="label">검사진행</span>
+                    <select class="sel w293" id="fStatus"><option value="">전체</option><option>검사중</option><option>완료</option></select>
+                  </div>
+                </div>
+                <div class="frow">
+                  <div class="fgrp"><label class="label" for="fName">수진자명</label><input class="inp w293" id="fName"></div>
+                  <div class="fgrp"><label class="label" for="fBirth">생년월일</label><input class="inp w293" id="fBirth" placeholder="6자리" maxlength="6" inputmode="numeric"></div>
+                </div>
+                <div class="frow" id="moreRow" hidden>
+                  <div class="fgrp"><label class="label" for="fChart">차트번호</label><input class="inp w293" id="fChart" placeholder="차트번호 입력"></div>
+                  <div class="fgrp"><span class="label">H/L</span><select class="sel w293" id="fFlag"><option value="">전체</option><option value="abn">이상결과 있음</option><option value="norm">이상결과 없음</option></select></div>
+                </div>
+              </div>
+              <div class="actions">
+                <div class="center">
+                  <button type="button" class="btn btn-outline btn-lg" id="btnReset">초기화</button>
+                  <button type="submit" class="btn btn-search">조회</button>
+                </div>
+                <button type="button" class="ghost more" id="btnMore" aria-expanded="false">상세 <span class="ms">expand_more</span></button>
+              </div>
+            </form>
+            <div class="list">
+              <div class="tit">수진자 목록 <small>총 <b id="cnt">0</b>명</small></div>
+              <div class="gridbox">
+                <table class="grid" id="pGrid" data-own>
+                  <colgroup><col style="width:100px"><col style="width:149px"><col style="width:149px"><col style="width:50px"><col style="width:50px"><col style="width:149px"><col style="width:58px"><col style="width:37px"><col style="width:64px"></colgroup>
+                  <thead><tr><th>접수일자</th><th><button type="button" class="sort" id="sortName">수진자명 <span class="ms">swap_vert</span></button></th><th>차트번호</th><th>성별</th><th>나이</th><th>생년월일</th><th>이전결과</th><th>상태</th><th>검사진행</th></tr></thead>
+                  <tbody id="pBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+          <section class="right">
+            <div class="rhead">
+              <div class="tit">검사결과</div>
+              <div class="acts">
+                <button type="button" class="btn btn-outline" data-act="이력">검사결과이력조회</button>
+                <button type="button" class="btn btn-outline" data-act="추가">추가검사</button>
+                <button type="button" class="btn btn-outline" data-act="오더">오더의뢰지</button>
+                <button type="button" class="btn btn-outline" data-act="출력"><span class="ms">print</span>결과지 출력</button>
+                <button type="button" class="btn btn-outline" data-act="엑셀"><span class="ms">download</span>엑셀결과받기</button>
+                <span class="vbar"></span>
+                <button type="button" class="ibtn xls" aria-label="엑셀 다운로드" data-act="엑셀"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="1" y="2" width="16" height="14" rx="2" fill="#1d6f42"/><path d="M5.5 5.5l7 7m0-7l-7 7" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+              </div>
+            </div>
+            <div class="dtable"><table class="dt" id="dt"></table></div>
+            <div class="rgrid">
+              <div class="gridbox">
+                <table class="grid" id="rGrid" data-own>
+                  <colgroup><col style="width:32px"><col style="width:121px"><col><col style="width:110px"><col style="width:174px"><col style="width:58px"><col style="width:121px"><col style="width:48px"></colgroup>
+                  <thead><tr><th><input type="checkbox" class="chk" id="chkAll" aria-label="전체 선택"></th><th>보험코드</th><th>검사항목</th><th>결과</th><th>참고치</th><th>H/L</th><th>보고일자</th><th>이력</th></tr></thead>
+                  <tbody id="rBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div id="screens" style="display:contents"></div>
+      </main>
+
+      <div class="toasts" id="toasts" aria-live="polite"></div>
+      <div class="dimmer" id="dimmer" hidden>
+        <div class="cdlg" role="alertdialog" aria-modal="true" aria-labelledby="cTitle" aria-describedby="cMsg">
+          <div class="cicon"><span class="ms">error</span></div>
+          <h3 id="cTitle">삭제할까요?</h3>
+          <p id="cMsg">삭제한 데이터는 복구할 수 없습니다.</p>
+          <div class="cbtns">
+            <button type="button" class="btn btn-outline btn-lg" id="cCancel">취소</button>
+            <button type="button" class="btn btn-danger btn-lg" id="cOk">삭제</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="note">Pretendard는 이 환경에서 불러올 수 없어 Noto Sans KR로 대체 표시됩니다. 아이콘은 Material Symbols. Figma에서 「텍스트」로 비어 있던 컬럼명·데이터는 샘플로 채움.</div>
+</div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const TODAY = new Date(2026, 9, 19);
+  const pad = n => String(n).padStart(2, '0');
+  const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+  const addMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMonth()+n); return x; };
+  function rng(seed){ let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+  const stage = $('#stage');
+
+  /* ── 배율 ── */
+  const wrap = $('#wrap');
+  let mode = 'fit';
+  function fit(){
+    if (mode === 'fit') { const s = Math.min(1, wrap.clientWidth / 1920); stage.style.transform = `scale(${s})`; wrap.style.height = (919 * s) + 'px'; wrap.classList.remove('actual'); }
+    else { stage.style.transform = 'none'; wrap.style.height = '919px'; wrap.classList.add('actual'); }
+  }
+  $('#zFit').onclick = () => { mode='fit'; $('#zFit').setAttribute('aria-pressed','true'); $('#zActual').setAttribute('aria-pressed','false'); fit(); };
+  $('#zActual').onclick = () => { mode='actual'; $('#zActual').setAttribute('aria-pressed','true'); $('#zFit').setAttribute('aria-pressed','false'); fit(); };
+  new ResizeObserver(fit).observe(wrap);
+  fit();
+
+  /* ── Toast · ConfirmDialog ── */
+  function toast(type, title, detail){
+    const icon = { info:'info', ok:'check_circle', warn:'warning' }[type] || 'info';
+    const t = document.createElement('div');
+    t.className = 'toast ' + (type === 'info' ? '' : type);
+    t.innerHTML = `<span class="ms">${icon}</span><div><b>${esc(title)}</b><p>${esc(detail)}</p></div><button type="button" aria-label="닫기"><span class="ms">close</span></button>`;
+    t.querySelector('button').onclick = () => t.remove();
+    const box = $('#toasts'); box.prepend(t);
+    while (box.children.length > 3) box.lastChild.remove();
+    setTimeout(() => t.remove(), 3200);
+  }
+  let confirmCb = null;
+  function confirmDanger(title, msg, okLabel, cb){
+    $('#cTitle').textContent = title; $('#cMsg').textContent = msg; $('#cOk').textContent = okLabel || '삭제';
+    confirmCb = cb; $('#dimmer').hidden = false; $('#cCancel').focus();
+  }
+  $('#cCancel').onclick = () => { $('#dimmer').hidden = true; confirmCb = null; };
+  $('#cOk').onclick = () => { $('#dimmer').hidden = true; const cb = confirmCb; confirmCb = null; cb && cb(); };
+
+  /* ── LNB ── */
+  const MENU = [
+    ['find_in_page','결과조회',['통합결과조회','검사항목별조회','누적결과조회']],
+    ['domain_verification','의뢰접수',['검사의뢰등록','연동의뢰등록','검사의뢰 조회']],
+    ['finance','통계',['M/S조회','고객수가분석']],
+    ['live_help','고객지원',['공지사항관리','메일/SMS 템플릿 관리']],
+    ['coronavirus','감염관리',['결핵협회 접수 내역','지정균주결과','병원체보고내역','BLOOD 양성률']],
+    ['payments','청구',['거래처 청구','청구내역']],
+    ['account_circle','MY PAGE',['내 정보','비밀번호 변경']],
+    ['manage_accounts','운영자',['부서관리','역할별 권한 설정']],
+    ['settings','시스템관리자',['메뉴관리','검사 참조항목']]
+  ];
+  const lnb = document.querySelector('.lnb');
+  function setLnb(closed){ lnb.classList.toggle('closed', closed); const t = $('#lnbToggle'); t.setAttribute('aria-label', closed ? '메뉴 펼치기' : '메뉴 접기'); t.setAttribute('aria-expanded', !closed); }
+  $('#lnbToggle').onclick = () => setLnb(!lnb.classList.contains('closed'));
+  const menu = $('#menu');
+  MENU.forEach(([icon, name, subs]) => {
+    const g = document.createElement('div');
+    g.className = 'grp' + (name === '감염관리' ? ' open' : '');
+    g.innerHTML = `<button type="button" class="m1" title="${name}" aria-expanded="${name==='감염관리'}"><span class="lbl"><span class="ms">${icon}</span><span class="txt">${name}</span></span><span class="ms chev">expand_more</span></button><div class="sub">${subs.map(s=>`<a href="#" data-sub="${s}">${s}</a>`).join('')}</div>`;
+    const m1 = g.querySelector('.m1');
+    m1.onclick = () => { if (lnb.classList.contains('closed')) { setLnb(false); g.classList.add('open'); m1.setAttribute('aria-expanded', true); return; } const o = g.classList.toggle('open'); m1.setAttribute('aria-expanded', o); };
+    g.querySelectorAll('.sub a').forEach(a => a.onclick = e => { e.preventDefault(); gotoByTab(a.dataset.sub); });
+    menu.appendChild(g);
+  });
+  document.querySelectorAll('[data-sp]').forEach(scrollPanel);
+  wrapGrids(stage);
+
+
+  /* ── ScrollPanel: 떠 있는 스크롤바 (세로·가로) ── */
+  function scrollPanel(root){
+    const c = root.querySelector('.sp-content'), by = root.querySelector('.sp-bar:not(.sp-x)'), bx = root.querySelector('.sp-x');
+    let t = null;
+    const sc = () => stage.getBoundingClientRect().width / 1920 || 1;
+    const off = () => { const h = c.querySelector('thead'); return h ? h.offsetHeight : 0; };
+    const update = () => {
+      const ch = c.clientHeight, sh = c.scrollHeight, cw = c.clientWidth, sw = c.scrollWidth;
+      const ny = sh <= ch + 1, nx = !bx || sw <= cw + 1;
+      root.classList.toggle('noy', ny); root.classList.toggle('nox', nx);
+      if (!ny) { const o = off(), track = ch - o - (nx ? 0 : 10), h = Math.max(24, track * ch / sh); by.style.height = h + 'px'; by.style.top = o + (c.scrollTop / (sh - ch)) * (track - h) + 'px'; }
+      if (!nx) { const track = cw - (ny ? 0 : 10), w = Math.max(24, track * cw / sw); bx.style.width = w + 'px'; bx.style.left = (c.scrollLeft / (sw - cw)) * (track - w) + 'px'; }
+    };
+    c.addEventListener('scroll', () => { update(); root.classList.add('act'); clearTimeout(t); t = setTimeout(() => root.classList.remove('act'), 800); });
+    const drag = (bar, axis) => bar && bar.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation(); bar.setPointerCapture(e.pointerId); bar.classList.add('drag');
+      const p0 = axis === 'y' ? e.clientY : e.clientX, s0 = axis === 'y' ? c.scrollTop : c.scrollLeft;
+      const mv = m => { const d = ((axis === 'y' ? m.clientY : m.clientX) - p0) / sc(); if (axis === 'y') { const r = (c.scrollHeight - c.clientHeight) / Math.max(1, c.clientHeight - off() - bar.offsetHeight); c.scrollTop = s0 + d * r; } else { const r = (c.scrollWidth - c.clientWidth) / Math.max(1, c.clientWidth - bar.offsetWidth); c.scrollLeft = s0 + d * r; } };
+      const up = () => { bar.classList.remove('drag'); bar.removeEventListener('pointermove', mv); bar.removeEventListener('pointerup', up); };
+      bar.addEventListener('pointermove', mv); bar.addEventListener('pointerup', up);
+    });
+    drag(by, 'y'); drag(bx, 'x');
+    new ResizeObserver(update).observe(c);
+    new MutationObserver(() => requestAnimationFrame(update)).observe(c, {subtree:true, childList:true, attributes:true, attributeFilter:['class','hidden']});
+    update();
+  }
+  /* 그리드에 ScrollPanel 씌우기 (동적으로 그려지는 그리드 포함) */
+  function wrapGrids(root){
+    root.querySelectorAll('.gridbox').forEach(gb => {
+      if (gb.parentElement.classList.contains('gsp')) return;
+      const w = document.createElement('div'); w.className = 'sp gsp';
+      const st = gb.getAttribute('style'); if (st) { w.setAttribute('style', st); gb.removeAttribute('style'); }
+      gb.classList.add('sp-content'); gb.parentNode.insertBefore(w, gb); w.appendChild(gb);
+      w.insertAdjacentHTML('beforeend', '<div class="sp-bar" aria-hidden="true"></div><div class="sp-bar sp-x" aria-hidden="true"></div>');
+      scrollPanel(w);
+    });
+  }
+  new MutationObserver(() => wrapGrids(stage)).observe(stage, {subtree:true, childList:true});
+
+  /* ── 패널 상단 라운드 (Figma 기준: 위쪽 8px, 위에 붙은 패널·옆에 붙은 안쪽 모서리는 직각) ── */
+  function roundPanels(scr){
+    if (!scr || scr.dataset.rounded || !scr.offsetWidth) return;
+    const sel = '.pn,.col,.row,.sform,.left,.right';
+    const isWhite = el => { const cs = getComputedStyle(el); return cs.backgroundColor === 'rgb(255, 255, 255)' && el.offsetWidth >= 250 && el.offsetHeight >= 60; };
+    const cands = [...scr.querySelectorAll(sel)].filter(isWhite);
+    const top = cands.filter(el => !cands.some(o => o !== el && o.contains(el)));
+    const R = el => el.getBoundingClientRect();
+    top.forEach(el => {
+      const b = R(el), tol = 1.5 * (stage.getBoundingClientRect().width / 1920);
+      const above = top.some(o => { if (o === el) return false; const a = R(o); return Math.abs(a.bottom - b.top) <= tol && a.left < b.right - 1 && a.right > b.left + 1; });
+      if (above) return;
+      const lt = top.some(o => { if (o === el) return false; const a = R(o); return Math.abs(a.right - b.left) <= tol && Math.abs(a.top - b.top) <= tol; });
+      const rt = top.some(o => { if (o === el) return false; const a = R(o); return Math.abs(a.left - b.right) <= tol && Math.abs(a.top - b.top) <= tol; });
+      el.style.borderTopLeftRadius = lt ? '0' : '8px'; el.style.borderTopRightRadius = rt ? '0' : '8px';
+      el.style.borderBottomLeftRadius = '0'; el.style.borderBottomRightRadius = '0';
+    });
+    scr.dataset.rounded = '1';
+  }
+  /* ── 공통 빌더 ── */
+  const H = {
+    lbl: (t, w, req) => `<span class="label${w==='auto'?' auto':''}${req?' req':''}" ${w && w!=='auto' ? `style="width:${w}px"` : ''}>${t}</span>`,
+    inp: (v, w, o={}) => `<input class="inp" ${w?`style="width:${w}px"`:''} value="${esc(v)}" placeholder="${esc(o.ph||'')}" ${o.ro?'readonly':''} aria-label="${esc(o.al||o.ph||'입력')}">`,
+    sel: (opts, w, cur) => `<select class="sel" ${w?`style="width:${w}px"`:''} aria-label="선택">${opts.map(o=>`<option ${o===cur?'selected':''}>${esc(o)}</option>`).join('')}</select>`,
+    date: (v) => `<label class="date"><span class="ms">calendar_today</span><input class="inp" value="${esc(v||'')}" placeholder="YYYY-MM-DD" aria-label="날짜"></label>`,
+    range: (a, b) => `${H.date(a)}<span class="tilde">~</span>${H.date(b)}`,
+    radios: (name, opts, cur) => opts.map(o => `<label class="rad"><input type="radio" class="rdo" name="${name}" ${o===cur?'checked data-def':''}>${o}</label>`).join(''),
+    ta: (v, ph, h) => `<textarea class="ta" style="height:${h||78}px" placeholder="${esc(ph||'')}" aria-label="${esc(ph||'내용')}">${esc(v||'')}</textarea>`,
+    btn: (t, k, d, o={}) => `<button type="button" class="btn btn-${k}" data-do="${d||''}" ${o.dis?'disabled':''}>${o.ic?`<span class="ms">${o.ic}</span>`:''}${t}</button>`,
+    ib: (ic, d, al) => `<button type="button" class="ibtn" data-do="${d||''}" aria-label="${al||ic}"><span class="ms">${ic}</span></button>`,
+    xls: () => `<button type="button" class="ibtn xls" data-do="excel" aria-label="엑셀 다운로드"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="1" y="2" width="16" height="14" rx="2" fill="#1d6f42"/><path d="M5.5 5.5l7 7m0-7l-7 7" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></button>`,
+    tit: t => `<div class="tit">${t}</div>`,
+    cb: (l, c) => `<label class="rad"><input type="checkbox" class="chk" ${c?'checked':''}>${l}</label>`,
+    seg: (opts, on) => `<div class="seg" data-seg role="group">${opts.map(([l,d],i)=>`<button type="button" data-days="${d}" aria-pressed="${i===on}">${l}</button>`).join('')}</div>`,
+    total: n => `<span class="total">Total <b>${Number(n).toLocaleString()}</b>건</span>`,
+    sf: (...a) => `<div class="sf">${a.join('')}</div>`,
+    searchA: (fields) => `<form class="sform a" data-sform autocomplete="off"><div class="srow" style="flex:1">${fields}</div><div class="sact">${H.btn('조회','search','search')}${H.ib('refresh','reset','초기화')}</div></form>`,
+    searchB: (rows) => `<form class="sform b" data-sform autocomplete="off">${rows.map(r=>`<div class="srow">${r}</div>`).join('')}<div class="sact">${H.btn('초기화','outline btn-lg','reset')}${H.btn('조회','search','search')}</div></form>`,
+    pager: (on=2) => `<div class="pager" data-pager><button type="button" data-p="first" aria-label="처음"><span class="ms">keyboard_double_arrow_left</span></button><button type="button" data-p="prev" aria-label="이전"><span class="ms">chevron_left</span></button>${Array.from({length:10},(_,i)=>`<button type="button" data-p="${i+1}" class="${i+1===on?'on':''}">${i+1}</button>`).join('')}<button type="button" data-p="next" aria-label="다음"><span class="ms">chevron_right</span></button><button type="button" data-p="last" aria-label="끝"><span class="ms">keyboard_double_arrow_right</span></button></div>`,
+    atabs: (labels, on=0, w=100) => `<div class="atabs" role="tablist">${labels.map((l,i)=>`<button type="button" class="atab ${i===on?'on':''}" style="width:${w}px" role="tab" aria-selected="${i===on}">${l}</button>`).join('')}<span class="atab-line"></span></div>`,
+    grid: (cols, rows, o={}) => {
+      const colg = `<colgroup>${cols.map(c=>`<col ${c.w?`style="width:${c.w}px"`:''}>`).join('')}</colgroup>`;
+      const th = c => c.type==='chk' ? `<th><input type="checkbox" class="chk" data-all aria-label="전체 선택"></th>` : `<th>${c.sort?`<button type="button" class="sort" data-sort>${c.h} <span class="ms">swap_vert</span></button>`:c.h}</th>`;
+      const head = o.head2 ? o.head2 : `<tr>${cols.map(th).join('')}</tr>`;
+      const td = (c, v) => c.type==='chk' ? `<td><input type="checkbox" class="chk" aria-label="행 선택" ${v?'checked':''}></td>` : `<td class="${c.a||''}">${v ?? ''}</td>`;
+      const body = rows.map((r,i)=>`<tr data-r="${i}" class="${o.sel===i?'sel':''}">${cols.map((c,k)=>td(c, r[k])).join('')}</tr>`).join('');
+      return `<div class="gridbox"${o.h?` style="flex:none;height:${o.h}px"`:''}><table class="grid ${o.nosel?'nosel':''}" ${o.id?`id="${o.id}"`:''}>${colg}<thead>${head}</thead><tbody>${body}</tbody></table>${rows.length?'':`<div class="gempty">${o.empty||'데이터가 없습니다'}</div>`}</div>`;
+    },
+    dtb: rows => `<div class="dtb">${rows.map(r=>`<div class="dr"${r.h?` style="min-height:${r.h}px"`:''}>${(r.f||r).map(f=>`<div class="df" style="flex:${f.w||1} 1 0"><div class="dth ${f.req?'req':''}"${f.tw?` style="width:${f.tw}px"`:''}>${f.th}</div><div class="dtd ${f.v?'v':''}">${f.td}</div></div>`).join('')}</div>`).join('')}</div>`
+  };
+  const fileCtl = () => `<div class="fctl"><label class="btn btn-outline" style="cursor:pointer"><span class="ms">attach_file</span>파일찾기<input type="file" accept=".pdf" hidden data-file></label><input class="inp" readonly value="선택된 파일 없음" aria-label="선택된 파일"></div><span class="hint">파일형식: pdf / 최대 10MB</span>`;
+
+  /* ── 공통 동작 (위임) ── */
+  stage.addEventListener('click', e => {
+    const t = e.target;
+    const scr = t.closest('[data-screen]');
+    if (t.matches('th .chk[data-all]')) { t.closest('table').querySelectorAll('tbody .chk').forEach(c => c.checked = t.checked); return; }
+    const tr = t.closest('table.grid:not([data-own]) tbody tr[data-r]');
+    if (tr) {
+      const tb = tr.closest('table');
+      if (t.matches('.chk')) { const all = [...tb.querySelectorAll('tbody .chk')]; const h = tb.querySelector('th .chk'); if (h) h.checked = all.every(c=>c.checked); return; }
+      if (!tb.classList.contains('nosel')) { tb.querySelectorAll('tr.sel').forEach(x => x.classList.remove('sel')); tr.classList.add('sel'); }
+      if (tb.onRow) tb.onRow(+tr.dataset.r, tr);
+      return;
+    }
+    const so = t.closest('[data-sort]');
+    if (so) { const ic = so.querySelector('.ms'); const n = ic.textContent === 'arrow_upward' ? 'arrow_downward' : 'arrow_upward'; ic.textContent = n; const tb = so.closest('table'); const idx = [...so.closest('tr').children].indexOf(so.closest('th')); const body = tb.tBodies[0]; const rows=[...body.rows]; rows.sort((a,b)=>a.cells[idx].textContent.localeCompare(b.cells[idx].textContent,'ko',{numeric:true})*(n==='arrow_upward'?1:-1)); rows.forEach(r=>body.appendChild(r)); return; }
+    const sg = t.closest('[data-seg] button');
+    if (sg) { sg.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x===sg)); const ins = sg.closest('.sf').querySelectorAll('.date .inp'); if (ins.length === 2 && sg.dataset.days) { ins[0].value = fmt(addDays(TODAY, +sg.dataset.days)); ins[1].value = fmt(TODAY); } return; }
+    const at = t.closest('.atab');
+    if (at) { const box = at.parentElement; box.querySelectorAll('.atab').forEach(b => { b.classList.toggle('on', b===at); b.setAttribute('aria-selected', b===at); }); box.onTab && box.onTab([...box.querySelectorAll('.atab')].indexOf(at)); return; }
+    const pg = t.closest('[data-pager] button');
+    if (pg) { const box = pg.parentElement; const nums=[...box.querySelectorAll('button')].filter(b=>/^\d+$/.test(b.dataset.p)); let c = nums.findIndex(b=>b.classList.contains('on')); const p = pg.dataset.p; c = p==='first'?0:p==='last'?nums.length-1:p==='prev'?Math.max(0,c-1):p==='next'?Math.min(nums.length-1,c+1):+p-1; nums.forEach((b,i)=>b.classList.toggle('on',i===c)); return; }
+    const b = t.closest('[data-do]');
+    if (b && scr) {
+      const d = b.dataset.do, name = b.textContent.trim();
+      const S = SCREENS.find(s => 'scr-' + s.id === scr.id);
+      if (S && S.hooks && S.hooks[d]) { e.preventDefault(); S.hooks[d](b); return; }
+      if (d === 'search') { e.preventDefault(); toast('info','조회 완료','검색 조건으로 조회했습니다. (샘플)'); }
+      else if (d === 'reset') resetForm(scr);
+      else if (d === 'save') toast('ok','저장했습니다','입력한 내용을 저장했습니다. (샘플)');
+      else if (d === 'delete1') confirmDanger('공지사항을 삭제할까요?', '삭제한 공지는 복구할 수 없습니다.', '삭제', () => toast('ok','삭제했습니다','공지사항을 삭제했습니다. (샘플)'));
+      else if (d === 'delete') { const tb = scr.querySelector('table.grid'); const n = tb ? (tb.querySelectorAll('tbody .chk:checked').length || tb.querySelectorAll('tbody tr.sel').length) : 0; if (!n) { toast('warn','선택한 항목이 없습니다','삭제할 항목을 먼저 선택해 주세요.'); return; } confirmDanger(`${n}건을 삭제할까요?`, '삭제한 데이터는 복구할 수 없습니다.', '삭제', () => toast('ok','삭제했습니다',`${n}건을 삭제했습니다. (샘플)`)); }
+      else if (d === 'new') { scr.querySelectorAll('.dtb .inp:not([readonly]), .dtb .ta').forEach(i => i.value=''); scr.querySelectorAll('table.grid tr.sel').forEach(x=>x.classList.remove('sel')); const f = scr.querySelector('.dtb .inp:not([readonly])'); f && f.focus(); toast('info','신규 등록','상세 영역에 새 항목을 입력해 주세요.'); }
+      else if (d === 'excel' || d === 'download') toast('ok','다운로드','엑셀 파일을 내려받습니다. (샘플)');
+      else toast('info', name || '동작', `${name} 기능을 실행합니다. (샘플)`);
+    }
+  });
+  stage.addEventListener('submit', e => { if (e.target.matches('[data-sform]')) { e.preventDefault(); e.target.querySelector('[data-do="search"]').click(); } });
+  const enableSave = e => { const scr = e.target.closest('[data-screen]'); if (scr && e.target.closest('.dtb')) scr.querySelectorAll('[data-do="save"]:disabled').forEach(b => b.disabled = false); };
+  stage.addEventListener('change', e => { if (e.target.matches('[data-file]')) { const v = e.target.files[0] ? e.target.files[0].name : '선택된 파일 없음'; e.target.closest('.fctl').querySelector('.inp').value = v; } enableSave(e); });
+  stage.addEventListener('input', enableSave);
+  function resetForm(scr){ const f = scr.querySelector('[data-sform]'); if (!f) return; f.querySelectorAll('.inp').forEach(i => i.value = i.defaultValue); f.querySelectorAll('select').forEach(s => { const k = [...s.options].findIndex(o=>o.defaultSelected); s.selectedIndex = k < 0 ? 0 : k; }); f.querySelectorAll('.rdo').forEach(r => r.checked = r.hasAttribute('data-def')); toast('info','초기화','검색 조건을 처음 상태로 되돌렸습니다.'); }
+  function splitter(el){ el.addEventListener('pointerdown', ev => { const left = el.previousElementSibling; const sx = ev.clientX; const sc = stage.getBoundingClientRect().width/1920; const w0 = left.getBoundingClientRect().width/sc; el.setPointerCapture(ev.pointerId); const mv = m => { left.style.flex = 'none'; left.style.width = Math.max(600, Math.min(1500, w0 + (m.clientX - sx)/sc)) + 'px'; }; const up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); }; el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); }); }
+
+  /* ════════ eSMART_02 검사 참조항목 ════════ */
+  function s02(el){
+    const items = [
+      ['TA0021','흡연여부','Smoking Status','Y','1','문진 항목'],['TA0022','음주여부','Alcohol Use','Y','2','문진 항목'],['TA0023','임신여부','Pregnancy','Y','3','여성 수진자'],
+      ['TA0024','복용약물','Medication','Y','4',''],['TA0025','가족관계','Family Relations','Y','5','유전검사 필수'],['TA0026','과거병력','Past History','Y','6',''],
+      ['TA0027','채취시간','Collection Time','Y','7','HH:MM'],['TA0028','공복여부','Fasting','Y','8',''],['TA0029','신장','Height','Y','9','cm'],['TA0030','체중','Weight','Y','10','kg'],
+      ['TA0031','혈액형','Blood Type','Y','11',''],['TA0032','수혈이력','Transfusion History','N','12',''],['TA0033','검체 보관온도','Storage Temp.','Y','13','℃'],
+      ['TA0034','의뢰 사유','Reason for Request','Y','14',''],['TA0035','임상 소견','Clinical Findings','Y','15',''],['TA0036','이전 검사기관','Previous Lab','N','16',''],
+      ['TA0037','재검 사유','Retest Reason','Y','17',''],['TA0038','보호자 연락처','Guardian Contact','N','18','']
+    ];
+    el.innerHTML = `
+      ${H.searchA(H.sf(H.lbl('참조분류'), H.sel(['전체','문진','검체','임상정보','기타'],200)))}
+      <div class="pn grow">
+        <div class="lh">${H.total(634)}<div class="acts">${H.btn('신규등록','sec','new')}${H.btn('삭제','danger-out','delete')}</div></div>
+        ${H.grid([{h:'참조코드',w:100},{h:'참조항목명',w:482,sort:1},{h:'영문명',w:482},{h:'사용',w:50},{h:'순서',w:50},{h:'비고'}], items, {sel:4, id:'g02'})}
+      </div>
+      <div class="pn nob" style="flex:none">
+        <div class="lh" style="justify-content:flex-end">${H.btn('저장','primary','save')}</div>
+        <div id="d02"></div>
+      </div>`;
+    const fill = r => { const it = items[r]; el.querySelector('#d02').innerHTML = H.dtb([
+      [{th:'참조코드',req:1,w:827,td:H.inp(it[0],0,{ro:1})},{th:'참조분류',req:1,w:414,td:H.sel(['문진','검체','임상정보','기타'],0,'기타')},{th:'순서',w:414,td:H.inp(it[4])}],
+      [{th:'참조항목명',req:1,w:827,td:H.inp(it[1])},{th:'영문명',req:1,w:827,td:H.inp(it[2])}],
+      [{th:'표시명',req:1,w:827,td:H.inp(it[1])},{th:'영문 표시명',w:827,td:H.inp(it[2])}],
+      [{th:'입력형식',w:414,td:H.sel(['선택형','입력형','숫자형','날짜형'],0,'선택형')},{th:'단위',w:412,td:H.inp(it[5].length<4?it[5]:'')},{th:'입력범위',w:414,td:`${H.inp('0',111)}<span class="tilde">~</span>${H.inp('0',111)}<input type="checkbox" class="chk" aria-label="범위 미사용" title="범위 미사용">`},{th:'기본값',w:414,td:H.inp('')}],
+      {h:88, f:[{th:'설명',w:827,td:H.ta('', '내용을 입력해 주세요')},{th:'영문 설명',w:827,td:H.ta('', '내용을 입력해 주세요')}]}
+    ]); };
+    fill(4);
+    el.querySelector('#g02').onRow = fill;
+  }
+
+  /* ════════ eSMART_03 연동의뢰등록 ════════ */
+  function s03(el){
+    const R = [
+      ['연세대학교 의료원','연세대학교 의료원','연세대학교 의료원','A030','W9028_1','2026-03-27','등록완료','9715001','37','전용용기','CHOI JOON SUK'],
+      ['건강관리협회(광주전남)','건강관리협회(광주전남)','건강관리협회(광주전남)','S106','N3030','2026-03-27','등록완료','9645001','B2','구강 Swab','4600472393'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-26','등록완료','9715001','02','Whole Blood','NOOR UL AIN ZAHOOR'],
+      ['건강관리협회(광주전남)','건강관리협회(광주전남)','건강관리협회(광주전남)','S106','S106','2026-03-26','등록완료','9645001','B2','구강 Swab','4600472393'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-24','등록완료','9715002','02','Whole Blood','홍길순'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-24','등록완료','9715001','02','Whole Blood','NOOR UL AIN ZAHOOR'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-19','등록완료','202601237075053','02','Whole Blood','NOOR UL AIN ZAHOOR'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-19','등록완료','202601237075052','02','Whole Blood','홍길순'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-18','등록완료','202601237075051','02','Whole Blood','홍길상'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-18','등록완료','202601237075050','02','Whole Blood','NOOR UL AIN ZAHOOR'],
+      ['Gclabs','Gclabs','Gclabs','N161','W087','2026-03-12','등록완료','202603047771230027','02','Whole Blood','홍길순'],
+      ['Gclabs','Gclabs','Gclabs','N161','W087','2026-03-12','등록완료','202603047771230021','02','Whole Blood','홍길순'],
+      ['Gclabs','Gclabs','Gclabs','N161','W087','2026-03-11','등록완료','202603047771230017','02','Whole Blood','홍길순'],
+      ['Gclabs','Gclabs','Gclabs','N161','W087','2026-03-10','등록완료','202603047771230016','02','Whole Blood','홍길순'],
+      ['Gclabs','Gclabs','Gclabs','N161','W087','2026-03-10','수정등록대기','202603047771230012','02','Whole Blood','홍길순'],
+      ['연세대학교 의료원','연세대학교 의료원','연세대학교 의료원','A030','W9028_1','2026-03-09','등록완료','9714988','37','전용용기','KIM MIN JI'],
+      ['건강관리협회(광주전남)','건강관리협회(광주전남)','건강관리협회(광주전남)','S106','N3030','2026-03-09','등록완료','9644972','B2','구강 Swab','4600471820'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-06','등록완료','202601237075031','02','Whole Blood','이서준'],
+      ['Gclabs','Gclabs','Gclabs','N161','W087','2026-03-05','수정등록대기','202603047771229984','02','Whole Blood','박하윤'],
+      ['Gclabs','Gclabs','Gclabs','OS002','F172','2026-03-04','등록완료','202601237075027','02','Whole Blood','홍길순']
+    ];
+    const rows = R.map(r => [false, ...r.slice(0,6), r[6]==='등록완료'?r[6]:`<span class="fg-red">${r[6]}</span>`, ...r.slice(7)]);
+    el.innerHTML = `
+      ${H.searchA(`${H.sf(H.lbl('전송일자','auto'), H.range('',''))}${H.sf(H.lbl('고객','auto'), H.inp('',330,{ph:'재위탁거래처 코드 또는 명칭 입력'}))}${H.sf(H.lbl('의뢰여부','auto'), `<span style="display:flex;gap:16px">${H.radios('req03',['Yes','No'],'No')}</span>`)}${H.sf(H.lbl('연동분류','auto'), H.sel(['','HL7 연동','API 연동','파일 연동'],300))}`)}
+      <div class="row grow" style="gap:0">
+        <div class="pn nob" style="width:1338px;flex:none">
+          <div class="lh">${H.tit('연동정보')}${H.btn('다운로드','outline','download',{ic:'download'})}</div>
+          ${H.grid([{type:'chk',w:32},{h:'직접거래처',w:140},{h:'재위탁거래처',w:140},{h:'재위탁거래처명',w:140},{h:'지놈검사코드',w:84},{h:'고객검사코드',w:86},{h:'의뢰등록일자',w:96},{h:'연동현황',w:86},{h:'의뢰번호',w:158},{h:'검체코드',w:56},{h:'검체명',w:92},{h:'수진자명'}], rows, {id:'g03'})}
+          ${H.pager(2)}
+        </div>
+        <div class="split" role="separator" aria-label="영역 크기 조절"></div>
+        <div class="col grow" style="gap:0">
+          <div class="pn nob" style="height:354px;flex:none">
+            ${H.tit('고객검사코드매칭')}
+            <div id="map03" style="flex:1;min-height:0;display:flex;flex-direction:column"></div>
+          </div>
+          <div class="pn nob grow" style="border-top:6px solid var(--neutral-50)">
+            ${H.tit('병원추가등록정보')}
+            ${H.grid([{h:'검사코드'},{h:'참조코드'},{h:'참조코드명'},{h:'참조정보값'}], [['W9028_1','TA0025','가족관계','본인'],['W9028_1','TA0021','흡연여부','N'],['W9028_1','TA0028','공복여부','Y'],['N3030','TA0027','채취시간','09:30'],['N3030','TA0029','신장','172'],['F172','TA0030','체중','64']], {nosel:1})}
+          </div>
+        </div>
+      </div>`;
+    const head2 = `<tr><th colspan="2">고객</th><th colspan="2">SCL</th></tr><tr><th>검사코드</th><th>검사명</th><th>검사코드</th><th>검사명</th></tr>`;
+    const NAME = {A030:'유전자 패널검사', S106:'구강 미생물 검사', OS002:'약물유전체 검사', N161:'신생아 유전질환 검사'};
+    const showMap = i => { const map = el.querySelector('#map03'); if (i == null) { map.innerHTML = H.grid([{},{},{},{}], [], {head2, nosel:1, empty:'연동정보에서 행을 선택해 주세요'}); return; } const r = R[i]; map.innerHTML = H.grid([{},{},{},{}], [[r[4], NAME[r[3]]||'-', r[3], NAME[r[3]]||'-']], {head2, nosel:1}); };
+    showMap(null);
+    el.querySelector('#g03').onRow = i => showMap(i);
+    splitter(el.querySelector('.split'));
+  }
+
+  /* ════════ eSMART_04 검사의뢰 조회 ════════ */
+  function s04(el, S){
+    const cols = [{type:'chk',w:32},...['단계','의뢰일자','의뢰번호','지능등록번호','수진자명','직접거래처','재위탁거래처','고객코드','생년월일','차트번호','검사코드','검사명','검체코드','검체명','등록자','비고'].map(h=>({h}))];
+    el.innerHTML = `
+      ${H.searchB([
+        `<div class="sf" style="width:808px">${H.lbl('의뢰일자')}${H.range('2026-09-16','2026-09-23')}</div><div class="sf" style="width:808px">${H.lbl('의뢰번호')}${H.inp('',140)}<span class="tilde">~</span>${H.inp('',140)}</div>`,
+        `<div class="sf" style="width:392px">${H.lbl('직접거래처')}${H.inp('',304,{ph:'거래처 코드 또는 명칭'})}</div><div class="sf" style="width:392px">${H.lbl('재위탁거래처')}${H.inp('',304,{ph:'거래처 코드 또는 명칭'})}</div><div class="sf" style="width:392px">${H.lbl('수진자명')}${H.inp('',304)}</div><div class="sf" style="width:392px">${H.lbl('영업소')}${H.sel(['전체','서울','경기','부산','광주'],304)}</div>`,
+        `<div class="sf" style="width:392px">${H.lbl('영업팀')}${H.inp('',304,{ph:'영업팀 코드 입력'})}</div><div class="sf" style="width:392px">${H.lbl('영업담당자')}${H.inp('',304,{ph:'영업담당자 검색'})}</div><div class="sf" style="width:392px">${H.lbl('등록자')}${H.inp('',304,{ph:'등록자 검색'})}</div><div class="sf" style="width:392px">${H.lbl('차트번호')}${H.inp('',304)}</div>`
+      ])}
+      <div class="pn grow">
+        <div class="lh"><span id="t04">${H.total(0)}</span><div class="acts">${H.btn('시검','sec','')}${H.btn('의뢰복사','sec','')}${H.btn('바코드','outline','')}${H.btn('SMS 발송','outline','')}<span class="vbar"></span>${H.xls()}</div></div>
+        <div id="g04" style="flex:1;min-height:0;display:flex;flex-direction:column">${H.grid(cols, [], {empty:'데이터가 없습니다. 조회 버튼을 눌러 샘플 데이터를 불러오세요.'})}</div>
+        ${H.pager(2)}
+      </div>`;
+    S.hooks = { search: () => {
+      const r = rng(4242), names = ['홍길순','김민서','이준호','박지현','최서윤','정우진','강하은','조민재','윤서연','장도윤','임하준','한지우'];
+      const steps = ['접수','검사중','결과보고','시검요청'], cls = ['info','ing','ok','high'];
+      const tests = [['OS002','약물유전체 검사','02','Whole Blood'],['A030','유전자 패널검사','37','전용용기'],['S106','구강 미생물 검사','B2','구강 Swab'],['N161','신생아 유전질환 검사','02','Whole Blood']];
+      const rows = names.map((n,i)=>{ const t = tests[i%4]; const d = fmt(addDays(new Date(2026,8,23), -Math.floor(i/2))); return [false, `<span class="chip ${cls[i%4]}">${steps[i%4]}</span>`, d, String(9715100+i*3), 'G'+(26091600+i*17), n, i%3?'Gclabs':'연세대학교 의료원', i%3?'Gclabs':'연세대학교 의료원', 'C'+(10200+i*7), `${70+Math.floor(r()*30)}${pad(1+Math.floor(r()*12))}${pad(1+Math.floor(r()*28))}`, String(100000+Math.floor(r()*899999)), t[0], t[1], t[2], t[3], i%2?'김영업':'이등록', '']; });
+      el.querySelector('#g04').innerHTML = H.grid(cols, rows);
+      el.querySelector('#t04').innerHTML = H.total(rows.length);
+      toast('info','조회 완료',`의뢰 ${rows.length}건을 조회했습니다. (샘플)`);
+    }};
+  }
+
+  /* ════════ eSMART_05 서류 관리 ════════ */
+  function s05(el){
+    const D = [['00002','의뢰서','GCGenome_[일반]지놈의뢰서-RF(KR)-v1.2','GCGenome_[General] Request Form(EN)-v1.2','Y','Y'],['00003','의뢰서','GCGenome_[검진]지놈의뢰서-RF(KR)-v1.5','GCGenome_[Checkup] Request Form(EN)-v1.5','Y','Y'],
+      ['00004','의뢰서','유전자검사 의뢰서-v2.0','Genetic Test Request Form-v2.0','Y','Y'],['00005','의뢰서','약물유전체 검사 의뢰서','PGx Test Request Form','Y','Y'],['00006','의뢰서, 동의서','유전자검사 동의서-v3.1','Genetic Testing Consent-v3.1','Y','Y'],
+      ['00007','의뢰서, 동의서','개인정보 수집·이용 동의서','Privacy Consent Form','Y','Y'],['00008','의뢰서','7. GCGenome_[검진]지놈의뢰서-RF(KR)-v1.7-EX-M','7. GCGenome_[Checkup] Request Form(EN)-v1.7-EX-M','Y','Y'],
+      ['00009','의뢰서','신생아 선별검사 의뢰서','Newborn Screening Request','Y','Y'],['00010','의뢰서','산전 기형아검사 의뢰서','Prenatal Screening Request','Y','Y'],['00011','의뢰서','조직병리 검사 의뢰서','Histopathology Request','Y','Y'],
+      ['00012','의뢰서','세포병리 검사 의뢰서','Cytology Request','Y','Y'],['00013','의뢰서','미생물 배양검사 의뢰서','Culture Test Request','Y','Y'],['00014','의뢰서','결핵균 검사 의뢰서','TB Test Request','Y','Y'],
+      ['00015','의뢰서','감염병 PCR 검사 의뢰서','Infectious PCR Request','Y','Y'],['00016','동의서','유전상담 동의서','Genetic Counseling Consent','Y','N'],['00017','의뢰서','재검 요청서','Retest Request Form','Y','N']];
+    el.innerHTML = `
+      ${H.searchA(H.sf(H.lbl('서류구분'), H.sel(['전체','의뢰서','동의서','의뢰서, 동의서'],200)))}
+      <div class="row grow">
+        <div class="col" style="width:1000px;flex:none;background:var(--white);border:1px solid var(--border-default)">
+          <div class="pn nob grow">
+            <div class="lh">${H.total(634)}<div class="acts">${H.btn('신규등록','sec','new')}${H.btn('삭제','danger-out','delete')}</div></div>
+            ${H.grid([{h:'코드',w:100},{h:'구분',w:130},{h:'서류명',w:279,a:'l'},{h:'영문 서류명',w:279,a:'l'},{h:'한글서류',w:86},{h:'영문서류'}], D, {sel:6, id:'g05'})}
+          </div>
+          <div class="pn nob" style="flex:none">
+            <div class="lh" style="justify-content:flex-end">${H.btn('저장','primary','save',{dis:1})}</div>
+            <div id="d05"></div>
+          </div>
+        </div>
+        <div class="pn grow" style="gap:16px">
+          ${H.atabs(['국문','영문'],0,100)}
+          <div class="errbox">파일을 불러오는 중 오류가 발생했습니다.</div>
+        </div>
+      </div>`;
+    const fill = i => { const d = D[i]; el.querySelector('#d05').innerHTML = H.dtb([
+      [{th:'서류코드',req:1,td:H.inp(d[0],0,{ro:1})},{th:'서류구분',req:1,td:H.sel(['의뢰서','동의서','의뢰서, 동의서'],0,d[1])}],
+      {h:60, f:[{th:'한글명',td:H.inp(d[2])},{th:'한글파일',v:1,td:fileCtl()}]},
+      {h:60, f:[{th:'영문명',td:H.inp(d[3])},{th:'영문파일',v:1,td:fileCtl()}]}
+    ]); el.querySelectorAll('[data-do="save"]').forEach(b=>b.disabled=true); };
+    fill(6);
+    el.querySelector('#g05').onRow = fill;
+  }
+
+  /* ════════ eSMART_06 사용자 활동로그 ════════ */
+  function s06(el){
+    const screens = [['/system/UserActivityLog','{userNm=[], startDate=[2026-09-16], endDate=[2026-09-23], scrnNm=[], page=[0], size=[15]}'],['/system/UserActivityLog',''],['/system/BatchResult',''],['/system/BatchResult','{startDtime=[2026-09-16], endDtime=[2026-09-23], page=[0], size=[15]}'],['/system/Batch',''],['/system/Batch','{batchJobNm=[], page=[0], size=[15]}'],['/order/OrderList','{ordDtFrom=[2026-09-16], ordDtTo=[2026-09-23], page=[0], size=[20]}'],['/result/IntegratedResult','{rcptDt=[2026-09-23], ptNm=[], page=[0], size=[20]}'],['/result/IntegratedResult',''],['/claim/ClaimList','{clmDivCd=[BF], baseDtFrom=[2026-08-01], baseDtTo=[2026-08-31]}']];
+    const users = [['80032792','IS팀','TEST001','홍길동3'],['80032792','IS팀','TEST001','홍길동3'],['80031120','영업지원팀','SALES07','김영업'],['80030045','분석1팀','LAB0112','이분석']];
+    const rows = Array.from({length:20}, (_, i) => { const s = screens[i % screens.length], u = users[i < 10 ? 0 : (i % 4)]; const sec = 17 - i; const t = `2026-09-23 10:${pad(29 - Math.floor(i/6))}:${pad(((sec % 60) + 60) % 60)}`; return [i+1, u[0], u[1], u[2], u[3], '', s[0], '172.17.203.192', '', t, i===6?'엑셀 다운로드':'', i===6?'의뢰목록_20260923.xlsx':'', s[1]]; });
+    el.innerHTML = `
+      ${H.searchA(`${H.sf(H.lbl('사용자명'), H.inp('',292,{ph:'사용자명 입력'}))}${H.sf(H.lbl('화면명'), H.inp('',292,{ph:'화면명 입력'}))}${H.sf(H.lbl('접속일자'), H.seg([['1주일',-7],['2주일',-14]],0), H.range('2026-09-16','2026-09-23'))}`)}
+      <div class="pn grow">
+        <div class="lh" style="min-height:18px">${H.total(1964)}</div>
+        ${H.grid([{h:'NO',w:44},{h:'부서코드',w:86},{h:'부서명',w:60},{h:'사용자아이디',w:88},{h:'사용자명',w:70},{h:'화면아이디',w:86},{h:'화면명',w:180,a:'l'},{h:'접속 IP',w:110},{h:'MAC Address',w:110},{h:'사용일시',w:150},{h:'이벤트 내용',w:84},{h:'다운로드 파일명',w:110},{h:'Request Paramater',a:'l'}], rows)}
+      </div>`;
+  }
+
+  /* ════════ 좌우 이동(transfer) 공통 ════════ */
+  const tbtns = (id) => `<div class="tcol" data-transfer="${id}"><button type="button" class="ibtn sec" data-t="out" aria-label="선택 항목 빼기"><span class="ms">keyboard_double_arrow_right</span></button><button type="button" class="ibtn sec" data-t="in" aria-label="선택 항목 넣기"><span class="ms">keyboard_double_arrow_left</span></button></div>`;
+  const checkedIdx = (box) => [...box.querySelectorAll('tbody tr')].filter(tr => tr.querySelector('.chk:checked')).map(tr => +tr.dataset.r);
+
+  /* ════════ eSMART_07 부서 검사종목 ════════ */
+  function s07(el){
+    let L = [['암검사','기본5','T021','BRCA 1/2 Study(TNBC) 탐색적목적','주간','','0 day',''],['유전(희귀)질환','MLPA','OM013','MS-MLPA','','월화수목금','17 day',''],['암검사','기본5','T022','genechecks Cancer Risk(F)','주간','월화수목금','0 day',''],['암검사','기본5','T023','genechecks Cancer Risk(M)','','월화수목금','0 day',''],['암검사','고형암','T031','고형암 유전자 패널검사','','월화수목금','14 day',''],['암검사','혈액암','T041','혈액암 유전자 패널검사','주간','월수금','10 day',''],['유전(희귀)질환','WES','W001','전장엑솜분석(WES)','','월화수목금','28 day',''],['유전(희귀)질환','Sanger','S011','Sanger Sequencing','주간','월화수목금','7 day',''],['약물유전체','PGx','P001','약물유전체 검사(PGx)','','화목','5 day',''],['산전검사','NIPT','N001','G-NIPT','주야','월화수목금토','3 day',''],['산전검사','NIPT','N002','파노라마(미세결실)','','월화수목금','7 day',''],['감염','PCR','I011','결핵균 PCR','주야','월화수목금토일','1 day',''],['감염','배양','I021','일반세균 배양','주간','월화수목금','3 day',''],['암검사','액체생검','L001','가던트 액체생검 (G360)','','월화수목금','10 day','']];
+    let R = [['T024','신경내분비종양 유전자 패널검사'],['T025','갑상선암 유전자 패널검사'],['T026','폐암 유전자 패널검사'],['T027','대장암 유전자 패널검사'],['T028','위암 유전자 패널검사'],['T029','유방암 유전자 패널검사'],['T030','난소암 유전자 패널검사'],['T032','전립선암 유전자 패널검사'],['T033','췌장암 유전자 패널검사'],['T034','간암 유전자 패널검사'],['T035','육종 유전자 패널검사'],['T036','뇌종양 유전자 패널검사'],['H011','Myelodysplastic Syndromes(MDS) / Myeloproliferative Neoplasm'],['E001','검체 보관 및 전처리(안센)'],['R001','BALLONDOR Study (WES)'],['R002','CNV_HCC Study'],['H021','IgH Rearrangement']];
+    let sel = 1;
+    el.classList.add('hz');
+    el.innerHTML = `
+      <div class="col" style="width:1108px;flex:none;gap:6px">
+        ${H.searchA(`${H.sf(H.lbl('검사부서','auto'), H.sel(['전체','분석1팀','분석2팀','분자유전팀','면역팀'],200))}<span style="width:120px"></span>${H.sf(H.lbl('검사분류','auto'), H.sel(['전체','암검사','유전(희귀)질환','약물유전체','산전검사','감염'],200), H.sel(['전체','기본5','MLPA','WES','NIPT','PCR'],200))}`)}
+        <div class="col grow" style="background:var(--white)">
+          <div class="pn nob grow">${H.tit('부서 검사종목')}<div id="L07" class="col grow"></div></div>
+          <div class="pn" style="flex:none">
+            <div class="lh"><span class="tit stit">부서 검사종목 상세</span>${H.btn('저장','primary','save')}</div>
+            <div id="d07"></div>
+          </div>
+        </div>
+      </div>
+      ${tbtns('07')}
+      <div class="col grow" style="gap:6px">
+        <form class="sform a" data-sform autocomplete="off"><div class="srow">${H.sf(H.lbl('검사분류','auto'), H.sel(['전체','암검사','혈액암','연구용'],140), H.sel(['전체','고형암','혈액암','Study'],140))}</div><div class="sact">${H.btn('조회','search','search')}</div></form>
+        <div class="pn nob grow">${H.tit('미지정 검사종목')}<div id="R07" class="col grow"></div></div>
+      </div>`;
+    const cl = [{type:'chk',w:32},{h:'대분류',w:120,sort:1},{h:'중분류',w:100,sort:1},{h:'검사코드',w:100,sort:1},{h:'검사명',w:431,a:'l',sort:1},{h:'주야',w:53,sort:1},{h:'검사요일',w:77,sort:1},{h:'검사소요',w:74,sort:1},{h:'비고'}];
+    const DAYS = ['월','화','수','목','금','토','일'];
+    const fill = () => { const r = L[sel]; const box = el.querySelector('#d07'); if (!r) { box.innerHTML = ''; return; } box.innerHTML = H.dtb([
+      [{th:'검사코드',req:1,td:`${H.inp(r[2],200,{ro:1})}${H.inp(r[3],0,{ro:1})}`}],
+      [{th:'주야구분',req:1,td:`<span style="display:flex;gap:16px;padding-left:2px">${H.radios('dn07',['주간','야간','주야'],r[4])}</span>`},{th:'검사소요',req:1,td:H.inp(parseInt(r[6])||0)}],
+      [{th:'검사요일',req:1,td:`<span style="display:flex;gap:16px;padding-left:2px">${DAYS.map(d=>H.cb(d, r[5].includes(d))).join('')}</span>`}],
+      {h:88, f:[{th:'비고',td:H.ta(r[7],'내용을 입력해 주세요')}]}
+    ]); };
+    const render = () => {
+      el.querySelector('#L07').innerHTML = H.grid(cl, L.map(r=>[false,...r]), {sel, id:'gL07'});
+      el.querySelector('#R07').innerHTML = H.grid([{type:'chk',w:32},{h:'검사코드',w:100,sort:1},{h:'검사명',a:'l',sort:1}], R.map(r=>[false,...r]), {id:'gR07'});
+      el.querySelector('#gL07').onRow = i => { sel = i; fill(); };
+      fill();
+    };
+    render();
+    el.querySelector('[data-transfer]').onclick = e => {
+      const b = e.target.closest('[data-t]'); if (!b) return;
+      if (b.dataset.t === 'out') { const idx = checkedIdx(el.querySelector('#L07')); if (!idx.length) { toast('warn','선택한 항목이 없습니다','왼쪽 부서 검사종목에서 뺄 항목을 체크해 주세요.'); return; } R = R.concat(idx.map(i => [L[i][2], L[i][3]])); L = L.filter((_, i) => !idx.includes(i)); sel = Math.min(sel, L.length - 1); render(); toast('ok','미지정으로 이동',`${idx.length}개 검사종목을 미지정 목록으로 옮겼습니다.`); }
+      else { const idx = checkedIdx(el.querySelector('#R07')); if (!idx.length) { toast('warn','선택한 항목이 없습니다','오른쪽 미지정 검사종목에서 넣을 항목을 체크해 주세요.'); return; } L = L.concat(idx.map(i => ['미분류','-',R[i][0],R[i][1],'','월화수목금','0 day',''])); R = R.filter((_, i) => !idx.includes(i)); render(); toast('ok','부서 검사종목에 추가',`${idx.length}개 검사종목을 부서에 지정했습니다.`); }
+    };
+  }
+
+  /* ════════ eSMART_08 부서 검사종목 분류 ════════ */
+  function s08(el){
+    const TESTS = ['신경내분비종양 유전자 패널검사','갑상선암 유전자 패널검사','폐암 유전자 패널검사','대장암 유전자 패널검사','위암 유전자 패널검사','유방암 유전자 패널검사','MS-MLPA','BRCA 1/2 Study(TNBC)','전장엑솜분석(WES)','Sanger Sequencing','G-NIPT','파노라마(미세결실)','결핵균 PCR','IgH Rearrangement','CNV_HCC Study'];
+    const G = [['GRP01','1','고형암','N'],['GRP02','2','혈액암','N'],['GRP03','3','유전(희귀)질환','Y'],['GRP04','4','산전검사','N'],['GRP05','5','약물유전체','N'],['GRP06','6','감염','Y'],['GRP07','7','연구용','N'],['GRP08','8','기타','N']];
+    const items = gi => Array.from({length:5}, (_, k) => [`${G[gi][0].replace('GRP','IT')}${k+1}`, String(k+1), `${G[gi][2]} ${['기본','확장','정밀','추가','재검'][k]}`, k===2?'Y':'N']);
+    const tests = (gi, ii) => { const r = rng(gi*31+ii*7+3); const n = 3 + Math.floor(r()*4); return Array.from({length:n}, (_, k) => [String(k+1), TESTS[(gi*3+ii*2+k) % TESTS.length]]); };
+    let gi = 0, ii = 0, T = tests(0,0);
+    let R = [['T024','신경내분비종양 유전자 패널검사'],['T025','갑상선암 유전자 패널검사'],['T026','폐암 유전자 패널검사'],['T027','대장암 유전자 패널검사'],['T028','위암 유전자 패널검사'],['T029','유방암 유전자 패널검사'],['T030','난소암 유전자 패널검사'],['T032','전립선암 유전자 패널검사'],['T033','췌장암 유전자 패널검사'],['T034','간암 유전자 패널검사'],['T035','육종 유전자 패널검사'],['T036','뇌종양 유전자 패널검사'],['H011','Myelodysplastic Syndromes(MDS) / Myeloproliferative Neoplasm'],['E001','검체 보관 및 전처리(안센)'],['R001','BALLONDOR Study (WES)'],['R002','CNV_HCC Study'],['H021','IgH Rearrangement']];
+    el.classList.add('hz');
+    el.innerHTML = `
+      <div class="col" style="width:1168px;flex:none;gap:6px">
+        ${H.searchA(H.sf(H.lbl('검사부서','auto'), H.sel(['분석1팀','분석2팀','분자유전팀','면역팀'],200)))}
+        <div class="row grow" style="gap:0;background:var(--white)">
+          <div class="col" style="width:389px;flex:none;border-right:1px solid var(--border-default)">
+            <div class="pn nob grow"><div class="lh">${H.tit('부서 분류그룹')}${H.btn('신규등록','sec','new')}</div><div id="g1" class="col grow"></div></div>
+            <div class="pn" style="flex:none;border-width:1px 0 0"><div class="lh" style="justify-content:flex-end"><span class="acts">${H.btn('저장','primary','save')}${H.btn('취소','outline','')}</span></div><div id="d1"></div></div>
+          </div>
+          <div class="col" style="width:389px;flex:none;border-right:1px solid var(--border-default)">
+            <div class="pn nob grow"><div class="lh">${H.tit('부서 분류그룹 항목')}${H.btn('신규등록','sec','new')}</div><div id="g2" class="col grow"></div></div>
+            <div class="pn" style="flex:none;border-width:1px 0 0"><div class="lh" style="justify-content:flex-end"><span class="acts">${H.btn('저장','primary','save')}${H.btn('삭제','danger-out','delete')}</span></div><div id="d2"></div></div>
+          </div>
+          <div class="pn nob grow">${H.tit('분류항목 검사종목')}<div id="g3" class="col grow"></div></div>
+        </div>
+      </div>
+      ${tbtns('08')}
+      <div class="col grow" style="gap:6px">
+        <form class="sform a" data-sform autocomplete="off"><div class="srow">${H.sf(H.lbl('검사분류','auto'), H.sel(['전체','암검사','혈액암','연구용'],120), H.sel(['전체','고형암','혈액암','Study'],120))}</div><div class="sact">${H.btn('조회','search','search')}</div></form>
+        <div class="pn nob grow">${H.tit('부서 검사종목')}<div id="R08" class="col grow"></div></div>
+      </div>`;
+    const r1 = () => { el.querySelector('#g1').innerHTML = H.grid([{h:'분류코드',w:121},{h:'순서',w:53},{h:'분류명',w:121},{h:'중복허용'}], G, {sel:gi, id:'t1'}); el.querySelector('#t1').onRow = i => { gi = i; ii = 0; T = tests(gi, ii); r1(); r2(); r3(); };
+      el.querySelector('#d1').innerHTML = H.dtb([[{th:'정렬순서',tw:100,td:`${H.inp(G[gi][1],120)}<span style="width:12px"></span>${H.cb('중복항목 허용', G[gi][3]==='Y')}`}],[{th:'분류그룹',tw:100,td:`${H.inp(G[gi][0],0,{ro:1})}${H.inp(G[gi][2])}`}]]); };
+    const r2 = () => { const it = items(gi); el.querySelector('#g2').innerHTML = H.grid([{h:'분류코드',w:121},{h:'순서',w:53},{h:'분류명',w:121},{h:'중복허용'}], it, {sel:ii, id:'t2'}); el.querySelector('#t2').onRow = i => { ii = i; T = tests(gi, ii); r2(); r3(); };
+      el.querySelector('#d2').innerHTML = H.dtb([[{th:'분류항목',tw:100,td:`${H.inp(it[ii][0],0,{ro:1})}${H.inp(it[ii][2])}`}],[{th:'정렬순서',tw:100,td:H.inp(it[ii][1])}]]); };
+    const r3 = () => { el.querySelector('#g3').innerHTML = H.grid([{type:'chk',w:32},{h:'순서',w:53},{h:'검사명',a:'l'}], T.map(t=>[false,...t]), {nosel:1}); };
+    const r4 = () => { el.querySelector('#R08').innerHTML = H.grid([{type:'chk',w:32},{h:'검사코드',w:100,sort:1},{h:'검사명',a:'l',sort:1}], R.map(r=>[false,...r])); };
+    r1(); r2(); r3(); r4();
+    el.querySelector('[data-transfer]').onclick = e => {
+      const b = e.target.closest('[data-t]'); if (!b) return;
+      if (b.dataset.t === 'out') { const idx = checkedIdx(el.querySelector('#g3')); if (!idx.length) { toast('warn','선택한 항목이 없습니다','분류항목 검사종목에서 뺄 항목을 체크해 주세요.'); return; } R = R.concat(idx.map(i => ['-', T[i][1]])); T = T.filter((_, i) => !idx.includes(i)).map((t,k)=>[String(k+1), t[1]]); r3(); r4(); toast('ok','분류에서 제외',`${idx.length}개 검사종목을 분류항목에서 뺐습니다.`); }
+      else { const idx = checkedIdx(el.querySelector('#R08')); if (!idx.length) { toast('warn','선택한 항목이 없습니다','오른쪽 부서 검사종목에서 넣을 항목을 체크해 주세요.'); return; } T = T.concat(idx.map((i,k) => [String(T.length+k+1), R[i][1]])); R = R.filter((_, i) => !idx.includes(i)); r3(); r4(); toast('ok','분류항목에 추가',`${idx.length}개 검사종목을 분류항목에 넣었습니다.`); }
+    };
+  }
+
+  /* ════════ eSMART_09 거래처 청구 ════════ */
+  function s09(el){
+    const C = [['N','851106','진광희병원','Genome영업소','1,000,000','909,090','90,910','1,000,000','0','0'],['N','A000000','테스트거래처','광명영업소','51,483,440','45,636,660','4,550,280','50,186,940','1,296,500','2.52'],['N','G001452','세브란스병원','Genome영업소','210,000','190,909','19,091','210,000','0','0'],['N','G010000','Gclabs','Genome영업소','14,028,750','11,612,039','1,161,211','12,773,250','1,255,500','8.95'],['N','G042512','용인세브란스병원(개인)','Genome영업소','294,000','267,272','26,728','294,000','0','0'],['N','G047184','연세대학교 의료원','Genome영업소','12,568,750','11,426,136','1,142,614','12,568,750','0','0'],['N','G066672','건강관리협회(광주전남)','서광주영업소','210,000','63,636','6,364','70,000','140,000','66.67'],['N','G075335','(주)풀무원','Genome영업소','2,640,000','2,400,000','240,000','2,640,000','0','0'],['N','G081203','강남서울내과','강남영업소','500,200','454,635','45,465','500,100','100','0.02'],['N','G090118','분당제일의원','분당영업소','1,320,000','1,200,000','120,000','1,320,000','0','0']];
+    const rows = C.map((c,i) => [false, c[0], c[1], c[2], c[3], '2026-09-30', c[4], c[5], c[6], c[7], c[8], c[9], '-', `2026-10-01 09:12:${pad(33+Math.floor(i/2))}`, '-', '-']);
+    const REQ = [['2026-03-23','9135003','김민준','123','G-NIPT','A002','파노라마(미세결실)','600,000','545,454','54,546','600,000','0','TEST001','2026-03-23 13:19:25'],['2026-03-23','9135003','김민준','123','G360','A003','가던트 액체생검 (G360)','3,850,000','3,500,000','350,000','3,850,000','0','TEST001','2026-03-23 13:19:25'],['2026-03-23','9135001','이서연','321','G-NIPT','A002','파노라마(미세결실)','600,000','545,454','54,546','600,000','0','TEST001','2026-03-23 10:46:06'],['2026-03-23','9135001','이서연','321','G360','A003','가던트 액체생검 (G360)','3,850,000','3,500,000','350,000','3,850,000','0','TEST001','2026-03-23 10:46:06'],['2026-03-23','9135001','이서연','321','DSC-PL','A005','DSC panel (Prolonged)','5,250,000','4,772,727','477,273','5,250,000','0','TEST001','2026-03-23 10:46:06'],['2026-03-22','9134987','박지후','4588','G-NIPT','A002','파노라마(미세결실)','600,000','545,454','54,546','600,000','0','TEST002','2026-03-22 16:02:41'],['2026-03-22','9134987','박지후','4588','G360','A003','가던트 액체생검 (G360)','3,850,000','3,500,000','350,000','3,850,000','0','TEST002','2026-03-22 16:02:41'],['2026-03-21','9134952','최유나','2217','DSC-PL','A005','DSC panel (Prolonged)','5,250,000','4,772,727','477,273','5,250,000','0','TEST001','2026-03-21 11:27:08']];
+    const rc = [{h:'의뢰일자',w:100},{h:'의뢰번호',w:86},{h:'수진자명',w:86},{h:'차트번호',w:80},{h:'카테고리',w:96},{h:'검사코드',w:80},{h:'검사항목명',w:397,a:'l'},{h:'기준수가',w:90,a:'r'},{h:'공급가액',w:90,a:'r'},{h:'부가세액',w:84,a:'r'},{h:'청구수가',w:90,a:'r'},{h:'할인율',w:64,a:'r'},{h:'등록자ID',w:84},{h:'등록일시',w:150},{h:'메모'}];
+    const opt = ['선택','표시','미표시'];
+    el.innerHTML = `
+      ${H.searchA(`${H.sf(H.lbl('청구구분'), H.sel(['마감전','마감후','전체'],263))}${H.sf(H.lbl('청구기준일'), `<span class="date"><span class="ms">calendar_today</span><input class="inp" style="width:128px" value="2026-08-01" aria-label="시작일"></span><span class="tilde">~</span><span class="date"><span class="ms">calendar_today</span><input class="inp" style="width:128px" value="2026-08-31" aria-label="종료일"></span>`)}${H.sf(H.lbl('직접거래처'), H.inp('',263,{ph:'고객코드 또는 고객명 입력'}))}${H.sf(H.lbl('영업소'), H.sel(['전체','Genome영업소','광명영업소','서광주영업소','강남영업소','분당영업소'],263))}`)}
+      <div class="row" style="height:410px;flex:none">
+        <div class="pn" style="width:1218px;flex:none">
+          <div class="lh">${H.tit('청구리스트')}<div class="acts">${H.btn('청구수가 재계산','primary','')}${H.btn('청구서생성','sec','')}${H.btn('청구서취소','outline','')}${H.btn('매출전표생성','outline','')}</div></div>
+          ${H.grid([{type:'chk',w:32},{h:'청구',w:50},{h:'고객코드',w:86},{h:'고객명',w:160,a:'l'},{h:'영업소',w:110},{h:'청구기준일',w:100},{h:'기준수가',w:100,a:'r'},{h:'공급가액',w:100,a:'r'},{h:'부가세액',w:90,a:'r'},{h:'청구수가',w:100,a:'r'},{h:'할인금액',w:90,a:'r'},{h:'할인율',w:70,a:'r'},{h:'생성자',w:70},{h:'생성일시',w:150},{h:'출력일시',w:150},{h:'전표번호',w:100}], rows, {sel:0, id:'g09'})}
+        </div>
+        <div class="pn grow">
+          <div class="lh">${H.tit('출력옵션')}<div class="acts">${H.btn('청구서미리보기','outline','',{ic:'visibility'})}${H.btn('청구서출력','outline','',{ic:'print'})}</div></div>
+          ${H.dtb([[{th:'기준수가',tw:100,td:H.sel(opt)}],[{th:'소계합계',tw:100,td:H.sel(opt)}],[{th:'0원 표시',tw:100,td:H.sel(opt)}],{h:104,f:[{th:'안내사항',tw:100,td:H.ta('','내용을 입력해 주세요',92)}]},[{th:'의뢰코드',tw:100,td:H.sel(opt)}],[{th:'의뢰기간',tw:100,td:H.sel(opt)}],[{th:'출력페이지',tw:100,td:`<span style="display:flex;gap:16px">${H.cb('표지출력')}${H.cb('항목별')}${H.cb('수진자별')}</span>`}]])}
+        </div>
+      </div>
+      <div class="pn grow">
+        <div class="lh" style="min-height:24px"><span class="tit" id="reqTit">의뢰내역</span></div>
+        <div id="r09" class="col grow"></div>
+      </div>`;
+    const showReq = i => { const r = rng(i*97+5); const n = 5 + Math.floor(r()*4); const list = Array.from({length:n}, (_, k) => REQ[(k + i) % REQ.length]).map(x => [...x, '']); el.querySelector('#r09').innerHTML = H.grid(rc, list, {nosel:1}); el.querySelector('#reqTit').innerHTML = `의뢰내역 <small>${esc(C[i][2])} · <b>${n}</b>건</small>`; };
+    showReq(0);
+    el.querySelector('#g09').onRow = showReq;
+  }
+
+  /* ════════ eSMART_10 메뉴관리 ════════ */
+  function s10(el, S){
+    const T = [{n:'당월현황',no:10},{n:'고객',no:100,ic:'IconBuilding',open:1,c:['고객관리','고객수가관리','고객수가승인관리','고객검사코드맵핑','고객등록현황','M/S조회','고객수가분석','고객연도별매출']},{n:'검사의뢰',no:200,ic:'IconClipboard',open:1,c:['검사의뢰등록','엑셀의뢰등록','연동의뢰등록','검사의뢰조회','시검/취소신청및승인','수진자삭제리스트','의뢰서/동의서조회','시검취소현황','추가정보등록관리']},{n:'검사기준정보',no:300,ic:'IconFlask',c:['검사항목관리','검사 참조항목','부서 검사종목','부서 검사종목 분류','PBS 검사기준정보']},{n:'검사결과',no:400,ic:'IconReport',c:['통합결과조회','검사항목별조회','누적결과조회']},{n:'청구수금',no:500,ic:'IconWallet',c:['거래처 청구','수금관리']},{n:'매출',no:600,ic:'IconChart',c:['매출현황','매출전표']},{n:'시스템관리',no:900,ic:'IconSettings',c:['메뉴관리','역할별 권한 설정','공지사항관리','메일/SMS 템플릿 관리','부서관리','사용자 활동로그']}];
+    let selKey = '1';
+    el.classList.add('hz');
+    el.innerHTML = `
+      <div class="pn" style="width:380px;flex:none">
+        <div class="lh">${H.tit('메뉴구조')}<div class="acts">${H.btn('전체 열기','outline','',{ic:'add'})}${H.btn('전체 닫기','outline','',{ic:'remove'})}</div></div>
+        <div class="tree" id="tree10" role="tree"></div>
+      </div>
+      <div class="pn grow">
+        <div class="lh">${H.tit('메뉴 상세')}<div class="acts">${H.btn('상위메뉴 등록','sec','')}${H.btn('하위메뉴 등록','sec','')}<span class="vbar"></span>${H.btn('수정','primary','save')}${H.btn('삭제','danger-out','delete')}</div></div>
+        <div id="d10"></div>
+      </div>`;
+    const node = key => { const [a,b] = key.split('-').map(Number); const p = T[a]; return b == null ? {name:p.n, no:p.no, ic:p.ic||'', res:''} : {name:p.c[b], no:p.no + b + 1, ic:'', res:`/${['dashboard','customer','order','master','result','claim','sales','system'][a]}/${['List','Manage','Approval','Mapping','Status','Search','Analysis','Yearly','Excel'][b % 9]}`}; };
+    const draw = () => {
+      const tree = el.querySelector('#tree10');
+      tree.innerHTML = T.map((p, a) => { const k = String(a), has = !!p.c; return `<div class="tn ${selKey===k?'on':''}" data-k="${k}" role="treeitem" ${has?`aria-expanded="${!!p.open}"`:''} style="padding-left:8px">${has?`<span class="ms tw ${p.open?'op':''}">chevron_right</span>`:'<span class="tw0"></span>'}${p.n}</div>${has && p.open ? p.c.map((c, b) => `<div class="tn ${selKey===k+'-'+b?'on':''}" data-k="${k}-${b}" role="treeitem" style="padding-left:32px"><span class="tw0"></span>${c}</div>`).join('') : ''}`; }).join('');
+      const n = node(selKey);
+      el.querySelector('#d10').innerHTML = H.dtb([[{th:'사용권한',td:n.name==='메뉴관리'?'시스템관리자':''}],[{th:'메뉴아이콘',td:n.ic}],[{th:'리소스',td:n.res}],[{th:'메뉴명',td:n.name}],[{th:'메뉴설명',td:''}],[{th:'메뉴번호',td:n.no}]]);
+    };
+    draw();
+    el.querySelector('#tree10').onclick = e => { const tn = e.target.closest('.tn'); if (!tn) return; const k = tn.dataset.k; if (!k.includes('-') && T[+k].c && (e.target.classList.contains('tw') || selKey === k)) T[+k].open = !T[+k].open; selKey = k; draw(); };
+    el.querySelectorAll('.btn').forEach(b => { if (b.textContent.includes('전체 열기')) b.onclick = () => { T.forEach(p => p.c && (p.open = 1)); draw(); }; if (b.textContent.includes('전체 닫기')) b.onclick = () => { T.forEach(p => p.open = 0); draw(); }; });
+    S.hooks = { delete: () => { const n = node(selKey); confirmDanger(`'${n.name}' 메뉴를 삭제할까요?`, '하위 메뉴가 있으면 함께 삭제되며 복구할 수 없습니다.', '삭제', () => toast('ok','삭제했습니다',`'${n.name}' 메뉴를 삭제했습니다. (샘플)`)); } };
+  }
+
+  /* ── 트리 공통 (중첩) ── */
+  function drawTree(box, nodes, st){
+    const q = (st.q || '').trim();
+    const match = n => !q || n.n.includes(q) || (n.c || []).some(match);
+    const rows = [];
+    const walk = (list, depth, path) => list.forEach((n, i) => { if (!match(n)) return; const k = path.concat(i).join('-'); const has = !!(n.c && n.c.length); const open = has && (n.open || !!q); rows.push(`<div class="tn ${st.sel===k?'on':''}" data-k="${k}" role="treeitem" ${has?`aria-expanded="${open}"`:''} style="padding-left:${8+depth*24}px">${has?`<span class="ms tw ${open?'op':''}">chevron_right</span>`:'<span class="tw0"></span>'}${esc(n.n)}</div>`); if (open) walk(n.c, depth+1, path.concat(i)); });
+    walk(nodes, 0, []);
+    box.innerHTML = rows.join('') || '<div class="gempty" style="border:0">검색 결과가 없습니다</div>';
+  }
+  const treeNode = (nodes, k) => k.split('-').map(Number).reduce((acc, i, idx) => idx === 0 ? nodes[i] : acc.c[i], null);
+  function bindTree(box, nodes, st, onSel){
+    box.onclick = e => { const tn = e.target.closest('.tn'); if (!tn) return; const n = treeNode(nodes, tn.dataset.k); if (n.c && (e.target.classList.contains('tw') || st.sel === tn.dataset.k)) n.open = !n.open; st.sel = tn.dataset.k; drawTree(box, nodes, st); onSel && onSel(n, tn.dataset.k); };
+    drawTree(box, nodes, st);
+  }
+  const setAll = (nodes, v) => nodes.forEach(n => { if (n.c) { n.open = v; setAll(n.c, v); } });
+
+  /* ════════ eSMART_11 역할별 권한 설정 ════════ */
+  function s11(el){
+    const P = ['기본권한','고객관리','고객조회','수가관리','수가신청','수가조회','의뢰등록','의뢰조회','시검등록','시검승인','검사기준정보관리','검사기준정보조회','검사결과등록','검사결과조회','마감관리','마감조회','수금관리','수금조회','매출관리','매출조회','시스템관리','커뮤니케이션관리','커뮤니케이션조회','영업통계분석','검사코드통계분석'];
+    const ROLES = [['시스템관리자', P.map(()=>1)], ['검사기준정보관리', [1,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,0,1]], ['검사팀', [1,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,0,1]]];
+    el.innerHTML = `<div class="pn grow">
+      <div class="lh">${H.tit('관리자 역할별 권한 설정')}${H.btn('저장','primary','save')}</div>
+      <div class="ggrid" style="flex:none">
+        <div class="ghead"><div style="width:300px">역할</div><div style="flex:1">권한</div></div>
+        ${ROLES.map(([r, v], ri) => `<div class="grow-r role" data-role="${ri}"><div class="gcell" style="width:300px;flex:none;justify-content:center">${r}</div><div class="perm"><div class="all">${H.cb('전체', v.every(Boolean)).replace('class="chk"','class="chk" data-allp')}</div><div class="plist">${P.map((p,i)=>H.cb(p, v[i])).join('')}</div></div></div>`).join('')}
+      </div></div>`;
+    el.addEventListener('change', e => {
+      const row = e.target.closest('.role'); if (!row) return;
+      const all = row.querySelector('[data-allp]'), items = [...row.querySelectorAll('.plist .chk')];
+      if (e.target === all) items.forEach(c => c.checked = all.checked); else all.checked = items.every(c => c.checked);
+      el.querySelectorAll('[data-do="save"]').forEach(b => b.classList.add('dirty'));
+    });
+  }
+
+  /* ════════ eSMART_12 공지사항관리 상세 ════════ */
+  function s12(el){
+    el.innerHTML = `<div class="pn" style="height:718px;flex:none">
+      <div class="lh" style="min-height:24px">${H.tit('공지사항관리 상세')}</div>
+      ${H.dtb([[{th:'첨부파일',td:'없음'}],[{th:'대표이미지',td:'없음'}],[{th:'공지대상',td:'영업소 직원, 고객사 (국내), 고객사 (해외), GC지놈 영업사원, GC지놈 검사담당자, GC지놈 전체직원'}],[{th:'등록일시',td:'2026-09-17 10:07:52'}],{h:300,f:[{th:'내용',td:'<div style="align-self:flex-start;padding:2px 0;line-height:1.6">추석 연휴 기간(9/24~9/28) 검체 수거 및 결과 보고 일정 안내드립니다.<br>연휴 중 응급 검체는 영업소 담당자에게 별도로 연락 바랍니다.</div>'}]},[{th:'제목',td:'추석 연휴 검체 수거 일정 안내'}],[{th:'상위게시기간',td:'2026-09-01 ~ 2026-09-30 / 팝업공지'}],[{th:'등록자',td:'TEST001'}],[{th:'공지유형',td:'일반'}],[{th:'게시여부',td:'Y'}]])}
+      <div class="acts" style="justify-content:center;padding-top:12px">${H.btn('목록','outline','')}${H.btn('삭제','danger-out','delete1')}${H.btn('수정','primary','')}</div>
+    </div>`;
+  }
+
+  /* ════════ eSMART_13 메일/SMS 템플릿 관리 ════════ */
+  function s13(el){
+    const L = [['SMS','인사말','사용','안녕하세요. #TRC_CN# 고객님, SCL입니다.'],['메일','검사결과 안내','사용','#TRC_CN# 고객님, 의뢰하신 #TRC_TN#(#TRC_TC#) 검사결과가 보고되었습니다.'],['SMS','의뢰 접수 완료','사용','#TRC_CN# 의뢰가 정상 접수되었습니다.'],['SMS','검체 수거 안내','사용','오늘 오후 검체 수거 예정입니다.'],['SMS','결과 지연 안내','사용','#TRC_TN# 검사결과가 지연되고 있습니다.'],['SMS','재검 요청 안내','사용','#TRC_TN# 재검이 필요합니다. 검체를 다시 보내 주세요.'],['메일','청구서 발송','사용','이번 달 청구서를 첨부해 드립니다.'],['SMS','수금 안내','사용','미수금 내역을 확인해 주세요.'],['SMS','공지사항 알림','사용','새 공지사항이 등록되었습니다.'],['SMS','비밀번호 초기화','사용','임시 비밀번호가 발급되었습니다.'],['SMS','계정 승인 완료','사용','계정 사용이 승인되었습니다.'],['SMS','시스템 점검 안내','미사용','시스템 점검이 예정되어 있습니다.'],['SMS','검사 일정 변경','미사용','#TRC_TN# 검사 일정이 변경되었습니다.'],['메일','동의서 회신 요청','사용','동의서 원본 회신을 요청드립니다.'],['SMS','연동 오류 알림','사용','연동 데이터 수신 중 오류가 발생했습니다.']];
+    el.innerHTML = `
+      ${H.searchA(`${H.sf(H.lbl('템플릿 유형',0,1), H.sel(['전체','SMS','메일'],292))}${H.sf(H.lbl('사용여부'), H.sel(['전체','사용','미사용'],292))}`)}
+      <div class="row grow">
+        <div class="pn" style="width:440px;flex:none">
+          <div class="lh">${H.total(15)}<div class="acts">${H.btn('신규등록','sec','new')}${H.btn('삭제','danger-out','delete')}</div></div>
+          ${H.grid([{h:'NO',w:44},{h:'템플릿 유형',w:90},{h:'템플릿명',w:204},{h:'사용여부'}], L.map((r,i)=>[i+1,r[0],r[1],r[2]]), {sel:0, id:'g13', h:538})}
+          <div style="padding-top:8px">${H.pager(2)}</div>
+        </div>
+        <div class="pn grow">
+          <div class="lh" style="padding-bottom:8px">${H.tit('템플릿 설정')}${H.btn('저장','primary','save')}</div>
+          <div class="row" style="gap:16px;align-items:flex-start">
+            <div class="col" style="width:890px;flex:none;gap:8px"><span class="tit stit">템플릿 내용</span><div id="d13"></div></div>
+            <div class="col grow" style="gap:8px"><span class="tit stit">치환문자목록</span>
+              ${H.grid([{h:'치환문자'},{h:'치환문자예약어'}], [['검사코드','#TRC_TC#'],['검사명','#TRC_TN#'],['고객명','#TRC_CN#']], {nosel:1, id:'sub13', h:132})}
+              <span class="hint" style="font-size:12px;color:var(--gray-500)">행을 클릭하면 커서 위치에 예약어가 들어갑니다.</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    const TB = ['format_bold','format_italic','format_underlined','|','format_color_text','format_color_fill','|','format_list_numbered','format_list_bulleted','format_align_left','|','link','image','code','format_clear'];
+    const CMD = {format_bold:'bold',format_italic:'italic',format_underlined:'underline',format_list_numbered:'insertOrderedList',format_list_bulleted:'insertUnorderedList',format_align_left:'justifyLeft',format_clear:'removeFormat'};
+    const fill = i => { const r = L[i]; el.querySelector('#d13').innerHTML = H.dtb([
+      {h:300, f:[{th:'내용',req:1,td:`<div class="editor"><div class="etb"><select class="esel" aria-label="문단"><option>Normal</option><option>Heading 1</option><option>Heading 2</option></select><select class="esel" aria-label="글꼴"><option>Sans Serif</option><option>Serif</option><option>Monospace</option></select>${TB.map(t=>t==='|'?'<span class="esep"></span>':`<button type="button" data-cmd="${t}" aria-label="${t}"><span class="ms">${t}</span></button>`).join('')}</div><div class="ebody" contenteditable="true" spellcheck="false">${esc(r[3])}</div></div>`}]},
+      [{th:'템플릿명',req:1,td:H.inp(r[1])}],[{th:'템플릿유형',req:1,td:H.sel(['SMS','메일'],0,r[0])}],[{th:'사용여부',req:1,td:H.sel(['사용','미사용'],0,r[2])}]
+    ]); };
+    fill(0);
+    el.querySelector('#g13').onRow = fill;
+    let range = null;
+    el.addEventListener('mousedown', e => { if (e.target.closest('.etb button')) e.preventDefault(); });
+    document.addEventListener('selectionchange', () => { const s = getSelection(); if (s.rangeCount && el.querySelector('.ebody') && el.querySelector('.ebody').contains(s.anchorNode)) range = s.getRangeAt(0).cloneRange(); });
+    el.addEventListener('click', e => {
+      const b = e.target.closest('.etb button'); if (b) { const c = CMD[b.dataset.cmd]; if (c) document.execCommand(c); else toast('info','편집 도구', `${b.dataset.cmd.replace(/_/g,' ')} (샘플)`); return; }
+      const tr = e.target.closest('#sub13 tbody tr'); if (tr) { const body = el.querySelector('.ebody'); body.focus(); const s = getSelection(); if (range) { s.removeAllRanges(); s.addRange(range); } else { const r = document.createRange(); r.selectNodeContents(body); r.collapse(false); s.removeAllRanges(); s.addRange(r); } document.execCommand('insertText', false, tr.cells[1].textContent); }
+    });
+  }
+
+  /* ════════ eSMART_14 부서관리 ════════ */
+  function s14(el){
+    const ORG = [{n:'회사', open:1, c:[{n:'경영관리실', c:[{n:'인사팀'},{n:'재무팀'},{n:'총무팀'}]},{n:'사업개발팀'},{n:'영업본부', open:1, c:[{n:'마케팅팀'},{n:'TS-G팀'},{n:'TS-C팀'},{n:'TS-H팀'},{n:'TS-O팀'},{n:'영업관리팀'}]},{n:'연구소', open:1, c:[{n:'AI-C팀'},{n:'연구기획팀'},{n:'제품개발팀'},{n:'연구개발팀'}]},{n:'의학본부', c:[{n:'임상의학팀'},{n:'유전상담팀'}]},{n:'분석본부', c:[{n:'분석1팀'},{n:'분석2팀'},{n:'분자유전팀'},{n:'품질관리팀'}]},{n:'영업소', c:[{n:'강남영업소'},{n:'강동영업소'},{n:'광명영업소'},{n:'구로영업소'}]},{n:'테스트부서'}]}];
+    const U = [['122999','강남','강남영업소','',''],['159999','강동','강동영업소','',''],['167999','강릉','강릉영업소','',''],['165999','강서','강서영업소','',''],['221925','곽*예','품질관리팀','','test@mail.com'],['142999','관악','관악영업소','',''],['113999','광명','광명영업소','',''],['118999','광주','동광주영업소','',''],['177999','구로','구로영업소','',''],['135999','구리','구리영업소','',''],['150999','구미','구미영업소','',''],['152999','군산','군산영업소','',''],['187999','군포','군포영업소','',''],['250038','권*경','영업관리팀','과장','test@mail.com'],['230005','권*민','영업관리팀','대리','test@mail.com'],['113001','관리자','재무팀','팀장','abcdaaa@mail.com'],['113002','관리자2','재무팀','','abcdaaa@mail.com'],['113003','관리자3','재무팀','','abcdaaa@mail.com'],['113004','관리자4','재무팀','','abcdaaa@mail.com']];
+    const st = {sel:'0', q:''};
+    el.classList.add('hz');
+    el.innerHTML = `
+      <div class="pn" style="width:500px;flex:none">
+        <div class="lh">${H.tit('조직도')}<div class="acts">${H.btn('신규등록','sec','')}${H.btn('수정','primary','')}</div></div>
+        <div class="col grow" style="border:1px solid var(--border-default)">
+          <div class="srow" style="gap:6px;padding:6px 8px;border-bottom:1px solid var(--border-default)"><input class="inp" id="q14" style="width:254px" placeholder="부서명 검색" aria-label="부서명 검색">${H.btn('전체 열기','outline','',{ic:'add'})}${H.btn('전체 닫기','outline','',{ic:'remove'})}</div>
+          <div class="tree" id="t14" role="tree" style="border:0"></div>
+        </div>
+      </div>
+      <div class="col grow" style="gap:6px">
+        <form class="sform a" data-sform autocomplete="off"><div class="srow" style="flex:1">${H.sf(H.lbl('검색어'), H.sel(['전체','사용자명','사용자 아이디','부서명'],160))}<input class="inp" id="k14" style="flex:1" placeholder="검색어 입력" aria-label="검색어"></div><div class="sact">${H.btn('조회','search','search')}${H.ib('refresh','reset','초기화')}</div></form>
+        <div class="pn grow">
+          <div class="lh" style="min-height:24px"><span class="tit" id="dn14">회사</span></div>
+          <div class="row grow" style="gap:16px">
+            <div class="col" style="width:570px;flex:none;gap:8px"><div id="g14" class="col grow"></div>${H.pager(2)}</div>
+            <div class="col grow" style="gap:12px" id="d14"></div>
+          </div>
+        </div>
+      </div>`;
+    let list = U.slice(), sel = 0;
+    const fill = () => { const u = list[sel]; const box = el.querySelector('#d14'); if (!u) { box.innerHTML = ''; return; } const ext = /영업소/.test(u[2]); const tw = 110;
+      box.innerHTML = H.dtb([[{th:'사용자명',tw,td:u[1]},{th:'직원구분',tw,td:ext?'외부직원':'내부직원'}],[{th:'부서명',tw,td:u[2]},{th:'직책',tw,td:u[3]}],[{th:'사용자 아이디',tw,td:u[0]},{th:'이메일',tw,td:u[4]}],[{th:'업무용 휴대폰',tw,td:ext?'':'010-****-1234'},{th:'휴대폰 번호',tw,td:''}],[{th:'사무실 전화번호',tw,td:ext?'':'02-1234-5678'},{th:'내선 번호',tw,td:ext?'':'2' + u[0].slice(-3)}]]) + H.dtb([[{th:'사용 여부',tw,td:'사용'},{th:'상태',tw,td:'재직'}],[{th:'입사일',tw,td:`20${10+(+u[0].slice(1,3))%14}.0${1+(+u[0][3])%9}.${pad(1+(+u[0].slice(-2))%28)}`},{th:'퇴사일',tw,td:'-'}]]); };
+    const drawList = () => { el.querySelector('#g14').innerHTML = H.grid([{h:'NO',w:44},{h:'사용자 아이디',w:96},{h:'사용자명',w:90},{h:'부서명',w:100},{h:'직급',w:60},{h:'이메일'}], list.map((u,i)=>[i+1,...u]), {sel, id:'gu14', empty:'해당 부서에 사용자가 없습니다'}); const g = el.querySelector('#gu14'); if (g) g.onRow = i => { sel = i; fill(); }; fill(); };
+    drawList();
+    const tbox = el.querySelector('#t14');
+    bindTree(tbox, ORG, st, n => { el.querySelector('#dn14').textContent = n.n; });
+    el.querySelector('#q14').addEventListener('input', e => { st.q = e.target.value; drawTree(tbox, ORG, st); });
+    el.querySelectorAll('.btn').forEach(b => { if (b.textContent.includes('전체 열기')) b.onclick = () => { setAll(ORG, 1); drawTree(tbox, ORG, st); }; if (b.textContent.includes('전체 닫기')) b.onclick = () => { setAll(ORG, 0); ORG[0].open = 1; drawTree(tbox, ORG, st); }; });
+    return { search: () => { const k = el.querySelector('#k14').value.trim(); list = U.filter(u => !k || u.join(' ').includes(k)); sel = 0; drawList(); toast('info','조회 완료',`사용자 ${list.length}명을 조회했습니다.`); } };
+  }
+
+  /* ════════ eSMART_15 검사의뢰등록 ════════ */
+  function s15(el, S){
+    const CAT = [['A001','G-NIPT 기본','02'],['A002','파노라마(미세결실)','02'],['A003','가던트 액체생검 (G360)','B2'],['A004','CNV_HCC Study','02'],['A005','DSC panel (Prolonged)','02'],['A006','BALLONDOR Study (WES)','02'],['A007','IgH Rearrangement','02'],['A008','검체 보관 및 전처리','37'],['A009','신경내분비종양 패널','02']];
+    let picked = [CAT[1], CAT[2], CAT[4]];
+    let files = [];
+    const PT = [['0012','김민준','연세대학교 의료원',38,'남','1988-04-12','이서연','산부인과','123'],['0011','이서연','연세대학교 의료원',34,'여','1992-07-03','박정민','내과','321'],['0010','박지후','세브란스병원',45,'남','1981-02-19','김소희','내분비내과','4588'],['0009','최유나','Gclabs',29,'여','1997-11-25','최영훈','소화기내과','2217'],['0008','정하윤','강남서울내과',52,'여','1974-05-30','정다은','가정의학과','3302'],['0007','윤서준','분당제일의원',41,'남','1985-09-08','이현석','내과','5120'],['0006','장지민','진광희병원',36,'여','1990-01-14','박정민','산부인과','1189'],['0005','한도윤','세브란스병원',60,'남','1966-03-22','김소희','내과','7731'],['0004','오세아','Gclabs',27,'여','1999-08-17','최영훈','유전상담','6604'],['0003','서지호','(주)풀무원',48,'남','1978-12-02','정다은','가정의학과','4410']];
+    const pinf = p => H.dtb([
+      [{th:'결과지',req:1,tw:100,td:H.sel(['한국어','English'],0,'한국어')}],
+      [{th:'의뢰구분',req:1,tw:100,td:`${H.sel(['정상','재검','추가'],0,'정상')}${fix()}`}],
+      [{th:'검체수',tw:100,td:`${H.inp('1')}${fix()}`}],
+      [{th:'검체채취일',tw:100,td:`<label class="date" style="flex:1"><span class="ms">calendar_today</span><input class="inp" style="width:100%" value="2026-09-23" aria-label="검체채취일"></label>${fix()}`}],
+      [{th:'담당의사',tw:100,td:`${H.inp(p[6])}${fix()}`}],
+      [{th:'차트번호',tw:100,td:H.inp(p[8])}],
+      [{th:'병동',tw:100,td:`${H.inp('')}${fix()}`}],
+      [{th:'나이/성별',tw:100,td:`${H.inp(p[3])}${H.sel(['남','여'],0,p[4])}`}],
+      [{th:'생년월일',tw:100,td:`<label class="date" style="flex:1"><span class="ms">calendar_today</span><input class="inp" style="width:100%" value="${p[5]}" aria-label="생년월일"></label>`}],
+      {h:90, f:[{th:'접수메모',tw:100,td:H.ta('','',78)}]},
+      [{th:'의뢰번호',req:1,tw:100,td:`${H.inp('20260923',0,{ro:1})}${H.inp(p[0])}`}],
+      [{th:'의뢰일자',req:1,tw:100,td:`<label class="date" style="flex:1"><span class="ms">calendar_today</span><input class="inp" style="width:100%" value="2026-09-23" aria-label="의뢰일자"></label>`}],
+      [{th:'고객',tw:100,td:`${H.sel(['연세대학교 의료원','세브란스병원','Gclabs','강남서울내과','분당제일의원','진광희병원','(주)풀무원'],0,p[2])}${fix(1)}`}],
+      [{th:'수진자명',req:1,tw:100,td:H.inp(p[1])}],
+      [{th:'진료과목',tw:100,td:`${H.inp(p[7])}${fix()}`}],
+      [{th:'영업소',tw:100,td:`${H.sel(['강남영업소','분당영업소','광명영업소'])}${H.sel(['강남','분당','광명'])}${fix(1)}`}]
+    ]);
+    const fix = c => `<input type="checkbox" class="chk" title="다음 의뢰에도 값 유지" aria-label="값 유지" ${c?'checked':''}>`;
+    el.innerHTML = `
+      <div class="pn" style="flex:none;padding:12px 16px"><div class="lh"><span class="tit stit" style="font-size:16px">검사의뢰등록</span><div class="acts">${H.btn('신규(Ctrl+Z)','sec','new15')}${H.btn('확정(Ctrl+A)','primary','ok15')}${H.btn('확정후다음(Ctrl+X)','primary','next15')}</div></div></div>
+      <div class="row grow" style="gap:0">
+        <div class="pn" style="width:400px;flex:none;overflow:auto">
+          <div class="lh" style="min-height:24px">${H.tit('수진자정보')}</div>
+          <div id="p15"></div>
+          <div style="border:1px solid var(--border-default);padding:10px;display:flex;flex-direction:column;gap:8px;flex:none">
+            ${H.dtb([[{th:'고객전화',tw:100,td:'정보없음'}]])}
+            ${H.grid([{h:'영업팀'},{h:'담당자'},{h:'사무실 번호'},{h:'휴대폰 번호'}], [['','','','']], {nosel:1, h:63})}
+          </div>
+        </div>
+        <span style="width:10px;flex:none"></span>
+        <div class="col" style="width:802px;flex:none">
+          <div class="row" style="height:512px;flex:none;gap:10px;background:var(--white);padding:16px">
+            <div class="col" style="width:520px;flex:none;gap:8px">
+              <div class="lh">${H.tit('검사항목')}${H.btn('삭제','danger-out','del15')}</div>
+              <div id="sel15" class="col grow"></div>
+            </div>
+            <div class="col grow" style="gap:6px">
+              <div class="srow" style="gap:8px"><input class="inp" id="q15" style="flex:1" placeholder="검색" aria-label="검사 검색"><button type="button" class="ibtn" style="background:var(--brand-500);border-color:var(--brand-500);color:var(--white)" aria-label="검색" id="qb15"><span class="ms">search</span></button></div>
+              <div id="cat15" class="col grow"></div>
+            </div>
+          </div>
+          <div class="row grow" style="gap:0">
+            <div class="pn nob" style="width:340px;flex:none;padding-bottom:0">
+              <div class="lh" style="min-height:24px">${H.tit('추가등록항목')}</div>
+              ${H.grid([{h:'추가항목명',w:208,sort:1},{h:'참조값',sort:1}], [])}
+            </div>
+            <div class="pn grow" style="padding-bottom:0">
+              <div class="lh">${H.tit('의뢰지/동의서')}<div class="acts">${H.btn('저장','primary','save')}<label class="btn btn-sec" style="cursor:pointer">파일 찾기<input type="file" hidden id="f15" multiple></label>${H.btn('삭제','danger-out','delfile15')}</div></div>
+              <div id="file15" class="col grow"></div>
+            </div>
+          </div>
+        </div>
+        <div class="split" role="separator" aria-label="영역 크기 조절"></div>
+        <div class="col grow" style="gap:6px">
+          <form class="sform b sf15" data-sform autocomplete="off">
+            <div class="srow">${H.lbl('고객')}${H.inp('',0,{ro:1,al:'고객'})}</div>
+            <div class="srow">${H.lbl('수진자')}${H.inp('',0,{al:'수진자'})}</div>
+            <div class="srow">${H.lbl('영업소')}${H.sel(['전체','강남영업소','분당영업소','광명영업소'])}</div>
+            <div class="srow">${H.lbl('의뢰번호')}${H.inp('',0,{al:'의뢰번호 시작'})}<span class="tilde">~</span>${H.inp('',0,{al:'의뢰번호 끝'})}</div>
+            <div class="srow">${H.lbl('의뢰일자',0,1)}<label class="date"><span class="ms">calendar_today</span><input class="inp" value="2026-09-23" aria-label="시작일"></label><span class="tilde">~</span><label class="date"><span class="ms">calendar_today</span><input class="inp" value="2026-09-23" aria-label="종료일"></label></div>
+            <div class="sact">${H.btn('초기화','outline btn-lg','reset')}${H.btn('조회','search','search')}</div>
+          </form>
+          <div class="pn grow" style="padding:16px 0">
+            <div class="lh" style="min-height:24px;padding:0 16px">${H.tit('수진자목록')}</div>
+            <div class="col grow" style="padding:0 16px">${H.grid([{type:'chk',w:32},{h:'의뢰일자',w:100,sort:1},{h:'의뢰번호',w:80,sort:1},{h:'수진자명',w:80,sort:1},{h:'직접거래처',w:130,sort:1},{h:'재위탁거래처',w:130}], PT.map(p=>[false,'2026-09-23',p[0],p[1],p[2],p[2]]), {sel:0, id:'pl15'})}</div>
+          </div>
+        </div>
+      </div>`;
+    let cur15 = 0;
+    const drawP = () => { el.querySelector('#p15').innerHTML = pinf(PT[cur15]); };
+    const drawSel = () => { el.querySelector('#sel15').innerHTML = H.grid([{type:'chk',w:32},{h:'검사코드',w:70},{h:'검사명',w:198,a:'l'},{h:'검체코드',w:66},{h:'등록자',w:66},{h:'등록일자'}], picked.map(c=>[false,c[0],c[1],c[2],'TEST001','2026-09-23']), {nosel:1, empty:'오른쪽 목록에서 검사를 클릭해 추가하세요'}); };
+    const drawCat = () => { const q = el.querySelector('#q15').value.trim(); const list = CAT.filter(c => !q || c.join(' ').toLowerCase().includes(q.toLowerCase())); el.querySelector('#cat15').innerHTML = H.grid([{h:'검사코드',w:70},{h:'검사명',a:'l'}], list.map(c=>[c[0],c[1]]), {id:'cg15', empty:'검색 결과가 없습니다'}); const g = el.querySelector('#cg15'); if (g) g.onRow = i => { const c = list[i]; if (picked.some(p => p[0] === c[0])) { toast('warn','이미 추가된 검사','같은 검사는 한 번만 추가할 수 있습니다.'); return; } picked.push(c); drawSel(); toast('ok','검사 추가',`${c[1]}을(를) 검사항목에 추가했습니다.`); }; };
+    const drawFiles = () => { el.querySelector('#file15').innerHTML = H.grid([{type:'chk',w:32},{h:'파일명',w:172,a:'l'},{h:'등록자',w:70},{h:'구분',w:80},{h:'다운로드'}], files.map(f=>[false,esc(f),'TEST001','의뢰지','<span class="ms ic">download</span>']), {nosel:1}); };
+    drawP(); drawSel(); drawCat(); drawFiles();
+    el.querySelector('#q15').addEventListener('input', drawCat);
+    el.querySelector('#qb15').onclick = drawCat;
+    el.querySelector('#f15').addEventListener('change', e => { files = files.concat([...e.target.files].map(f => f.name)); e.target.value = ''; drawFiles(); });
+    el.querySelector('#pl15').onRow = i => { cur15 = i; drawP(); };
+    splitter(el.querySelector('.split'));
+    S.hooks = {
+      del15: () => { const idx = checkedIdx(el.querySelector('#sel15')); if (!idx.length) { toast('warn','선택한 항목이 없습니다','삭제할 검사항목을 체크해 주세요.'); return; } picked = picked.filter((_, i) => !idx.includes(i)); drawSel(); toast('ok','삭제했습니다',`검사항목 ${idx.length}건을 뺐습니다.`); },
+      delfile15: () => { const idx = checkedIdx(el.querySelector('#file15')); if (!idx.length) { toast('warn','선택한 파일이 없습니다','삭제할 파일을 체크해 주세요.'); return; } files = files.filter((_, i) => !idx.includes(i)); drawFiles(); },
+      new15: () => { el.querySelectorAll('#p15 .inp:not([readonly]), #p15 .ta').forEach(i => { const keep = i.closest('.dtd').querySelector('.chk:checked'); if (!keep) i.value = ''; }); picked = []; drawSel(); toast('info','신규 의뢰','값 유지에 체크한 항목만 남기고 비웠습니다.'); },
+      ok15: () => { if (!picked.length) { toast('warn','검사항목이 없습니다','의뢰를 확정하려면 검사를 하나 이상 추가해 주세요.'); return; } toast('ok','의뢰 확정', `${PT[cur15][1]}님 의뢰(${picked.length}개 검사)를 확정했습니다. (샘플)`); },
+      next15: () => { if (!picked.length) { toast('warn','검사항목이 없습니다','의뢰를 확정하려면 검사를 하나 이상 추가해 주세요.'); return; } toast('ok','확정 후 다음', `${PT[cur15][1]}님 의뢰를 확정하고 다음 수진자로 넘어갑니다.`); cur15 = Math.min(PT.length - 1, cur15 + 1); const g = el.querySelector('#pl15'); g.querySelectorAll('tr.sel').forEach(x=>x.classList.remove('sel')); const tr = g.querySelector(`tr[data-r="${cur15}"]`); tr && tr.classList.add('sel'); drawP(); picked = []; drawSel(); }
+    };
+  }
+
+  /* ── 화면별 오버레이(팝업) ── */
+  function makeOv(S, html){ const o = document.createElement('div'); o.className = 'dimmer'; o.hidden = true; o.innerHTML = html; stage.appendChild(o); S.ov = o; S.ovOpen = true; return o; }
+  const openOv = S => { S.ovOpen = true; if (S === cur) S.ov.hidden = false; };
+  const closeOv = S => { S.ovOpen = false; S.ov.hidden = true; };
+  const srchBox = (ph) => `<div class="acts"><input class="inp" style="width:180px" placeholder="${ph}" aria-label="목록 내 검색" data-filter><button type="button" class="ibtn" style="background:var(--brand-500);border-color:var(--brand-500);color:var(--white)" aria-label="검색"><span class="ms">search</span></button></div>`;
+  function liveFilter(card){ const inp = card.querySelector('[data-filter]'); inp.addEventListener('input', () => { const q = inp.value.trim(); card.querySelectorAll('tbody tr').forEach(tr => tr.hidden = !!q && !tr.textContent.includes(q)); }); }
+
+  /* ════════ eSMART_16 M/S조회 ════════ */
+  function s16(el){
+    const city = ['강릉시','강릉시','강릉시','강릉시','강릉시','고성군','동해시','동해시','동해시','동해시','삼척시','삼척시','삼척시','속초시','속초시','원주시','원주시','원주시','원주시','원주시'];
+    const typ = ['의원','종합병원','요양병원','병원','상급종합병원','의원','의원','요양병원','종합병원','병원','의원','종합병원','요양병원','의원','병원','의원','종합병원','요양병원','병원','상급종합병원'];
+    const hc = [124,3,2,1,1,6,48,3,2,1,24,1,1,41,2,198,4,6,9,1], cc = [1,0,0,0,2,0,1,0,0,0,0,1,0,1,0,6,1,0,0,1];
+    const dep = [['내과',555,22],['소아청소년과',360,17],['정형외과',339,19],['피부과',333,13],['이비인후과',285,12],['외과',264,18],['비뇨의학과',210,12],['가정의학과',199,17],['마취통증의학과',184,14],['신경외과',170,14],['재활의학과',136,12],['신경과',126,11],['안과',101,9],['산부인과',95,8],['영상의학과',88,7],['정신건강의학과',72,5],['성형외과',64,4],['응급의학과',41,3],['치과',30,1],['한방내과',22,1]];
+    const eq = [['초음파영상진단기',521,21],['일반엑스선촬영장치',445,22],['내시경',412,19],['골밀도검사기',389,21],['심전도기',380,20],['자동혈구분석기',152,12],['생화학분석기',140,12],['유방촬영장치',78,17],['레이저수술기',66,8],['CT',59,16],['인공호흡기',49,14],['MRI',38,14],['혈액투석을위한인공신장기',37,11],['콘빔CT',35,6],['인큐베이터',20,10],['체외충격파쇄석기',17,10],['혈관조영장치',6,3],['분만감시기',5,3],['양전자단층촬영기 (PET)',4,2],['감마카메라',3,1]];
+    el.classList.add('hz');
+    const card = (t, ph, cols, rows) => `<div class="pn grow card16"><div class="lh">${H.tit(t)}${srchBox(ph)}</div>${H.grid(cols, rows)}</div>`;
+    el.innerHTML = card('종별코드','920건 중 검색',[{h:'시도',w:56},{h:'시군구',w:84},{h:'종별코드',w:227},{h:'병원수',w:72,a:'r'},{h:'거래처수',a:'r'}], city.map((c,i)=>['강원',c,typ[i],hc[i],cc[i]]))
+      + card('진료과목','756건 중 검색',[{h:'시도',w:56},{h:'진료과목',w:299},{h:'병원수',w:80,a:'r'},{h:'거래처수',a:'r'}], dep.map(d=>['강원',...d]))
+      + card('장비','252건 중 검색',[{h:'시도',w:56},{h:'장비명',w:299},{h:'병원수',w:80,a:'r'},{h:'거래처수',a:'r'}], eq.map(d=>['강원',...d]));
+    el.querySelectorAll('.card16').forEach(liveFilter);
+  }
+
+  /* ════════ eSMART_17 고객수가분석 ════════ */
+  function s17(el){
+    const T = [['Gclabs','N006',346500,0,267300,1872,548325360],['Gclabs','N199',1578500,0,1258730,225,307543050],['Gclabs','N140',2310000,0,1794540,131,257587770],['Gclabs','N019',550000,0,435380,485,230234510],['Gclabs','M001',876230,0,689590,150,114358200],['Gclabs','N035',262500,0,95810,716,112971250],['강북삼성수원의원','N256',1000000,0,297000,375,111375000],['Gclabs','N040',1012870,0,749980,125,104009620],['Gclabs','M003',846300,0,536030,152,101335480],['Gclabs','N198',1578500,0,1244540,66,88867880],['Gclabs','Z138',1036200,0,762740,92,78326450],['Gclabs','N065',1012870,0,813010,83,71642000],['Gclabs','N128',346500,0,201080,292,69281300],['연세대학교 의료원','W9028',2310000,0,1980000,21,41580000],['세브란스병원','A002',600000,0,480000,104,49920000]];
+    const r = rng(1717); const extra = Array.from({length:15}, (_, i) => { const base = 200000 + Math.floor(r()*1700000); const sp = Math.round(base * (0.55 + r()*0.35)); const n = 8 + Math.floor(r()*160); return [['강남서울내과','분당제일의원','진광희병원','(주)풀무원','건강관리협회(광주전남)'][i%5], 'N'+(300+i*7), base, 0, sp, n, sp*n]; });
+    const ALL = T.concat(extra);
+    const B = [['Q000003','결과지검증','OT001',3000000,0,'100%',2250000],['Q000004','물질확인검사','OT001',3000000,0,'100%',2250000],['Q000003','결과지검증','ON003',2000000,0,'100%',1500000],['Q000004','물질확인검사','ON003',2000000,0,'100%',1500000],['Q000003','결과지검증','N103',1445680,0,'100%',1120400],['Q000004','물질확인검사','N103',1445680,0,'100%',1120400],['Q000003','결과지검증','N117',1545280,0,'100%',1116443],['Q000004','물질확인검사','N117',1545280,0,'100%',1116443],['Q000003','결과지검증','N002',1050000,0,'100%',787500],['Q000004','물질확인검사','N002',1050000,0,'100%',787500],['G000228','건국대병원(허재영교수)','N103',1445680,350000,'76%',1120400],['Q000003','결과지검증','N024',966270,0,'100%',724700],['Q000004','물질확인검사','N024',966270,0,'100%',724700],['G010000','Gclabs','N035',262500,95810,'64%',196900],['G047184','연세대학교 의료원','N140',2310000,1600000,'31%',1732500],['G001452','세브란스병원','N019',550000,380000,'31%',412500]];
+    const n = v => Number(v).toLocaleString();
+    el.style.overflowY = 'auto';
+    el.innerHTML = `
+      <div class="pn" style="height:594px;flex:none;padding-bottom:24px">
+        <div id="at17">${H.atabs(['고객수가','기준수가'],0,100)}</div>
+        <div class="lh" style="padding-top:8px"><span class="tit" id="ct17">고객 특별수가 &amp; 매출 분석 (최근 1년)</span>${H.btn('Download','outline','download',{ic:'download'})}</div>
+        <div id="chart17" class="chart17"></div>
+      </div>
+      <div class="row" style="height:644px;flex:none;gap:6px">
+        <div class="pn grow card17"><div class="lh">${H.tit('고객 특별수가 &amp; 최근 1년간 거래')}<div class="acts">${srchBox('2,004건 중 검색').replace('<div class="acts">','').replace(/<\/div>$/,'').replace('width:180px','width:200px')}<span class="vbar"></span>${H.btn('Download','outline','download',{ic:'download'})}</div></div>
+          ${H.grid([{h:'고객명',w:289,a:'l'},{h:'검사코드',w:70},{h:'기준수가',w:90,a:'r'},{h:'최저수주가',w:84,a:'r'},{h:'특별수가',w:90,a:'r'},{h:'의뢰건수',w:76,a:'r'},{h:'의뢰금액',a:'r'}], T.map(t=>[t[0],t[1],n(t[2]),n(t[3]),n(t[4]),n(t[5]),n(t[6])]), {id:'g17'})}</div>
+        <div class="pn grow"><div class="lh">${H.tit('특별수가 &lt; 최저수주가')}${H.btn('Download','outline','download',{ic:'download'})}</div>
+          ${H.grid([{h:'고객코드',w:80},{h:'고객명',w:195,a:'l'},{h:'검사코드',w:70},{h:'기준수가',w:90,a:'r'},{h:'특별수가',w:80,a:'r'},{h:'할인율',w:64,a:'r'},{h:'최저수주가',w:90,a:'r'},{h:'최저수주가-특별수가',a:'r'}], B.map(b=>[b[0],b[1],b[2],n(b[3]),n(b[4]),b[5],n(b[6]),`<span class="fg-red">${n(b[6]-b[4])}</span>`]), {nosel:1})}</div>
+      </div>`;
+    liveFilter(el.querySelector('.card17'));
+    let mode = 0, hi = 0;
+    const W = 1656, Hh = 464, L = 64, R = 1600, TOP = 34, BOT = 388, XMAX = 2400000, YMAX = 2100;
+    const draw = () => {
+      const xv = d => mode === 0 ? d[4] : d[2];
+      const X = v => L + (v / XMAX) * (R - L), Y = v => BOT - (v / YMAX) * (BOT - TOP);
+      const maxA = Math.max(...ALL.map(d => d[6])), rad = a => 6 + 56 * Math.sqrt(a / maxA);
+      const xt = Array.from({length:9}, (_, i) => i * 300000), yt = Array.from({length:8}, (_, i) => i * 300);
+      const order = ALL.map((d, i) => i).sort((a, b) => ALL[b][6] - ALL[a][6]);
+      const h = ALL[hi];
+      el.querySelector('#chart17').innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" width="100%" height="100%" role="img" aria-label="고객별 특별수가와 의뢰건수 버블 차트">
+        ${yt.map(v => `<line x1="${L}" x2="${R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid-line)" stroke-width="1"/><text x="${L-10}" y="${Y(v)+4}" text-anchor="end" font-size="12" fill="var(--gray-500)">${n(v)}</text>`).join('')}
+        ${xt.map(v => `<text x="${X(v)}" y="${BOT+22}" text-anchor="middle" font-size="12" fill="var(--gray-500)">${n(v)}</text>`).join('')}
+        <line x1="${L}" x2="${R}" y1="${BOT}" y2="${BOT}" stroke="var(--gray-400)"/>
+        <text x="${L-10}" y="${TOP-4}" text-anchor="end" font-size="12" font-weight="600" fill="var(--gray-700)">건수</text>
+        <text x="${R}" y="${BOT+44}" text-anchor="end" font-size="12" font-weight="600" fill="var(--gray-700)">${mode===0?'특별수가 (원)':'기준수가 (원)'}</text>
+        ${order.map(i => { const d = ALL[i], on = i === hi; return `<circle data-i="${i}" cx="${X(xv(d))}" cy="${Y(d[5])}" r="${rad(d[6])}" fill="${on?'var(--accent)':'var(--brand-600)'}" fill-opacity="${on?0.55:0.22}" stroke="var(--white)" stroke-width="2"/><circle cx="${X(xv(d))}" cy="${Y(d[5])}" r="${rad(d[6])}" fill="none" stroke="${on?'var(--accent)':'var(--brand-600)'}" stroke-width="1.5" pointer-events="none"/>`; }).join('')}
+        <text x="${X(xv(h)) + rad(h[6]) + 10}" y="${Y(h[5]) + 5}" font-size="13" font-weight="600" fill="var(--gray-950)">${esc(h[0])} · ${h[1]}  ${n(h[5])}건 / ${(h[6]/1e8).toFixed(2)}억</text>
+      </svg><div class="ctip" hidden></div>`;
+    };
+    draw();
+    const box = el.querySelector('#chart17');
+    box.addEventListener('mousemove', e => { const c = e.target.closest('circle[data-i]'); const tip = box.querySelector('.ctip'); if (!c) { tip.hidden = true; return; } const d = ALL[+c.dataset.i]; const rb = box.getBoundingClientRect(), sc = rb.width / box.offsetWidth; tip.hidden = false; tip.innerHTML = `<b>${esc(d[0])} · ${d[1]}</b><span>특별수가 ${n(d[4])}원</span><span>기준수가 ${n(d[2])}원</span><span>의뢰 ${n(d[5])}건 · ${n(d[6])}원</span>`; tip.style.left = ((e.clientX - rb.left) / sc + 14) + 'px'; tip.style.top = ((e.clientY - rb.top) / sc + 14) + 'px'; });
+    box.addEventListener('mouseleave', () => { box.querySelector('.ctip').hidden = true; });
+    box.addEventListener('click', e => { const c = e.target.closest('circle[data-i]'); if (c) { hi = +c.dataset.i; draw(); } });
+    el.querySelector('#at17 .atabs').onTab = i => { mode = i; draw(); };
+    el.querySelector('#g17').onRow = i => { hi = i; draw(); };
+  }
+
+  /* ════════ eSMART_18 고객검사코드 맵핑 (+ 등록 팝업) ════════ */
+  function s18(el, S){
+    const M = [['G010200','5D DNA (HK) Limited','DNA01','','유전자 분석 패키지','A030','유전자 패널검사','2026-03-30','217908','2026-03-30','217908'],['G073287','(주)케이렙테크','KL001','','약물유전체 검사','OS002','약물유전체 검사','2026-03-30','TEST001','2026-03-30','TEST001'],['G047184','연세대학교 의료원','W9028_1','','가던트 인피니티','W9028','가던트 인피니티(Infinity)','2026-01-22','217908','2026-01-22','217908'],['G047184','연세대학교 의료원','W9023_1','','가던트 360 Tissue','W9023','가던트 360(Tissue)','2026-01-22','217908','2026-01-22','217908'],['G047184','연세대학교 의료원','W2067_1','','가던트 360','W2067','가던트 360(G360)','2026-01-22','217908','2026-01-22','217908'],['G010000','Gclabs','TEST4','고객부속검사4','고객검사항목4','TEST4','지놈검사항목4','2026-01-19','TEST003','2026-01-19','TEST003'],['G010000','Gclabs','TEST3','고객부속검사3','고객검사항목3','TEST3','지놈검사항목3','2026-01-19','TEST003','2026-01-19','TEST003'],['G010000','Gclabs','TEST5','고객부속검사5','고객검사항목5','TEST5','지놈검사항목5','2026-01-19','TEST003','2026-01-20','TEST001'],['G010000','Gclabs','TEST1','고객부속검사1','고객검사항목1','TEST1','지놈검사항목1','2026-01-19','TEST003','2026-01-19','TEST003'],['A000000','테스트거래처','1234566','0112123','테스트 검사','A001','Panel Application','2025-12-31','TEST001','2026-01-20','TEST001'],['G010000','Gclabs','test9123','testsub9','테스트91144','지놈test9','테스트91144','2025-11-20','TEST001','2026-01-20','TEST001'],['G010000','Gclabs','test2','testsub2','테스트2111','지놈test2','테스트2111','2025-11-20','TEST001','2026-01-20','TEST001'],['G010000','Gclabs','test5','testsub5','테스트5','지놈test5','테스트5','2025-11-20','TEST001','2025-11-20','TEST001'],['G066672','건강관리협회(광주전남)','N3030','','구강 미생물 검사','S106','구강 미생물 검사','2025-11-12','TEST002','2025-11-12','TEST002'],['G001452','세브란스병원','SV-201','','파노라마','A002','파노라마(미세결실)','2025-10-30','TEST001','2025-10-30','TEST001']];
+    const head2 = `<tr><th colspan="5">고객</th><th colspan="2">지놈</th><th rowspan="2">등록일자</th><th rowspan="2">등록자</th><th rowspan="2">수정일자</th><th rowspan="2">수정자</th></tr><tr><th>고객코드</th><th>고객명</th><th>검사코드</th><th>부속코드</th><th>검사항목명</th><th>검사코드</th><th class="br">검사항목명</th></tr>`;
+    el.innerHTML = `
+      ${H.searchA(`<div class="sf" style="flex:1">${H.lbl('고객코드/명')}<input class="inp" style="flex:1" placeholder="고객코드 또는 고객명 입력" aria-label="고객코드 또는 고객명"></div>`)}
+      <div class="pn grow">
+        <div class="lh">${H.total(20214)}<div class="acts">${H.btn('신규등록','sec','open18')}${H.btn('일괄등록','sec','')}${H.btn('수정','primary','')}${H.btn('삭제','outline','delete')}${H.xls()}</div></div>
+        ${H.grid([{w:90},{w:180},{w:100},{w:100},{w:506,a:'l'},{w:100},{w:220,a:'l'},{w:100},{w:80},{w:100},{}], M, {head2})}
+        <div style="padding-top:8px">${H.pager(2)}</div>
+      </div>`;
+    const ov = makeOv(S, `<div class="mdlg" role="dialog" aria-modal="true" aria-labelledby="m18t">
+      <div class="mdlg-h"><span id="m18t">고객검사코드 맵핑 등록</span><button type="button" class="ghost" data-x aria-label="닫기"><span class="ms" style="font-size:20px">close</span></button></div>
+      <div class="mdlg-b">
+        <span class="tit stit">고객</span>
+        ${H.dtb([[{th:'검사항목명',tw:110,td:H.inp('')}],[{th:'검사코드',req:1,tw:110,td:'<input class="inp" data-req="고객 검사코드" aria-label="고객 검사코드">'}],[{th:'부속코드',tw:110,td:H.inp('')}],[{th:'고객명',req:1,tw:110,td:'<input class="inp" data-req="고객명" placeholder="고객코드 또는 고객명 입력" aria-label="고객명">'}]])}
+        <span style="height:12px"></span>
+        <span class="tit stit">지놈</span>
+        ${H.dtb([[{th:'검사항목명',tw:110,td:H.inp('')}],[{th:'검사코드',req:1,tw:110,td:'<input class="inp" data-req="지놈 검사코드" placeholder="검사코드 입력" aria-label="지놈 검사코드">'}]])}
+      </div>
+      <div class="mdlg-f">${H.btn('취소','outline','')}<button type="button" class="btn btn-primary" data-save>저장</button></div>
+    </div>`);
+    ov.addEventListener('click', e => {
+      if (e.target.closest('[data-x]') || e.target.closest('.mdlg-f .btn-outline')) { closeOv(S); return; }
+      if (e.target.closest('[data-save]')) { const miss = [...ov.querySelectorAll('[data-req]')].find(i => !i.value.trim()); if (miss) { miss.focus(); toast('warn','필수 항목을 입력해 주세요', `${miss.dataset.req}을(를) 입력해야 저장할 수 있습니다.`); return; } closeOv(S); ov.querySelectorAll('.inp').forEach(i => i.value=''); toast('ok','등록했습니다','고객검사코드 맵핑을 등록했습니다. (샘플)'); }
+    });
+    S.hooks = { open18: () => openOv(S) };
+  }
+
+  /* ════════ eSMART_dialog_01 세션 만료 알림 ════════ */
+  function sDlg(el, S){
+    s06(el);
+    const ov = makeOv(S, `<div class="cdlg" role="alertdialog" aria-modal="true" aria-labelledby="sx-t" aria-describedby="sx-m">
+      <div class="cicon warn"><span class="ms">schedule</span></div>
+      <h3 id="sx-t">세션 만료 알림</h3>
+      <p id="sx-m">보안을 위해 10분 후 로그아웃 처리됩니다.<br>계속 작업하시려면 [연장] 버튼을 눌러주세요.</p>
+      <p class="timer">남은 시간 <b id="sx-time">09:58</b></p>
+      <div class="cbtns"><button type="button" class="btn btn-outline btn-lg" data-out>로그아웃</button><button type="button" class="btn btn-primary btn-lg" data-ext>연장</button></div>
+    </div>`);
+    let left = 598;
+    const tick = () => { if (S.ovOpen && cur === S) { left = Math.max(0, left - 1); const t = el.ownerDocument.getElementById('sx-time'); t.textContent = `${pad(Math.floor(left/60))}:${pad(left%60)}`; } };
+    setInterval(tick, 1000);
+    ov.addEventListener('click', e => {
+      if (e.target.closest('[data-ext]')) { closeOv(S); left = 600; toast('ok','세션 연장','로그인 시간을 10분 연장했습니다.'); }
+      if (e.target.closest('[data-out]')) { closeOv(S); toast('info','로그아웃','로그아웃 처리됩니다. (샘플)'); }
+    });
+    S.onShow = () => { left = 598; openOv(S); };
+  }
+
+  /* ── 화면 목록 (Figma 화면 레이아웃 페이지 순서) ── */
+  const SCREENS = [
+    {id:'eSMART_01', tabs:['통합결과조회','검사항목별조회','검사의뢰등록'], on:0},
+    {id:'eSMART_02', tabs:['검사 참조항목','검사항목별조회','검사의뢰등록'], on:0, build:s02},
+    {id:'eSMART_03', tabs:['연동의뢰등록','엑셀의뢰등록','검사의뢰등록'], on:0, build:s03},
+    {id:'eSMART_04', tabs:['시검/취소 신청 및 승인','검사의뢰 조회','연동의뢰등록'], on:1, build:s04},
+    {id:'eSMART_05', tabs:['시검/취소 신청 및 승인','검사의뢰 조회','연동의뢰등록'], on:1, build:s05, label:'의뢰서/동의서 관리'},
+    {id:'eSMART_06', tabs:['시검/취소 신청 및 승인','검사의뢰 조회','연동의뢰등록'], on:1, build:s06, label:'사용자 활동로그'},
+    {id:'eSMART_07', tabs:['시검/취소 신청 및 승인','부서 검사종목','연동의뢰등록'], on:1, build:s07},
+    {id:'eSMART_08', tabs:['부서 검사종목','부서 검사종목 분류','검사 참조항목'], on:1, build:s08},
+    {id:'eSMART_09', tabs:['시검/취소 신청 및 승인','검사의뢰 조회','연동의뢰등록'], on:1, build:s09, label:'거래처 청구'},
+    {id:'eSMART_10', tabs:['시검/취소 신청 및 승인','메뉴관리','연동의뢰등록'], on:1, build:s10},
+    {id:'eSMART_11', tabs:['시검/취소 신청 및 승인','역할별 권한 설정','연동의뢰등록'], on:1, build:s11},
+    {id:'eSMART_12', tabs:['시검/취소 신청 및 승인','공지사항관리','연동의뢰등록'], on:1, build:s12},
+    {id:'eSMART_13', tabs:['시검/취소 신청 및 승인','메일/SMS 템플릿 관리','연동의뢰등록'], on:1, build:s13},
+    {id:'eSMART_14', tabs:['시검/취소 신청 및 승인','부서관리','연동의뢰등록'], on:1, build:(el,S)=>{ S.hooks = s14(el); }},
+    {id:'eSMART_15', tabs:['시검/취소 신청 및 승인','검사의뢰등록','연동의뢰등록'], on:1, build:s15},
+    {id:'eSMART_16', tabs:['시검/취소 신청 및 승인','M/S조회','연동의뢰등록'], on:1, build:s16},
+    {id:'eSMART_17', tabs:['시검/취소 신청 및 승인','고객수가분석','연동의뢰등록'], on:1, build:s17},
+    {id:'eSMART_18', tabs:['시검/취소 신청 및 승인','고객검사코드 맵핑','연동의뢰등록'], on:1, build:s18},
+    {id:'eSMART_dialog_01', tabs:['시검/취소 신청 및 승인','검사의뢰 조회','연동의뢰등록'], on:1, build:sDlg, label:'세션 만료 알림'}
+  ];
+  const nameOf = S => S.label || S.tabs[S.on];
+  let cur = SCREENS[0];
+  const snav = $('#snav');
+  SCREENS.forEach(S => { const b = document.createElement('button'); b.type='button'; b.dataset.id = S.id; b.innerHTML = `${S.id.replace('eSMART_','').replace('dialog_01','dialog')}<small>${esc(nameOf(S))}</small>`; b.onclick = () => show(S.id); snav.appendChild(b); });
+
+  function show(id){
+    const S = SCREENS.find(s => s.id === id) || SCREENS[0];
+    cur = S;
+    if (S.build && !S.el) { S.el = document.createElement('div'); S.el.className = 'screen'; S.el.id = 'scr-' + S.id; S.el.dataset.screen = ''; $('#screens').appendChild(S.el); S.build(S.el, S); }
+    document.querySelectorAll('[data-screen]').forEach(x => x.hidden = x.id !== 'scr-' + S.id);
+    SCREENS.forEach(x => { if (x.ov) x.ov.hidden = !(x === S && x.ovOpen); });
+    if (S.onShow) S.onShow();
+    requestAnimationFrame(() => roundPanels(document.getElementById('scr-' + S.id)));
+    snav.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.id === S.id));
+    $('#vTitle').textContent = `${S.id} ${nameOf(S)}`;
+    renderTabs();
+    try { history.replaceState(null, '', '#' + S.id); } catch(e) {}
+  }
+  function renderTabs(){
+    const el = $('#ptabs'); el.innerHTML = '';
+    cur.tabs.forEach((t, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'ptab' + (i === cur.on ? ' on' : ''); b.setAttribute('role','tab'); b.setAttribute('aria-selected', i===cur.on);
+      b.innerHTML = `<span>${esc(t)}</span><span class="ms x" aria-hidden="true">close</span>`;
+      b.onclick = e => {
+        if (e.target.classList.contains('x')) { if (i !== cur.on) { cur.tabs.splice(i,1); if (i < cur.on) cur.on--; renderTabs(); } else toast('info','현재 화면','지금 보고 있는 화면 탭은 닫지 않도록 했습니다.'); return; }
+        if (i !== cur.on) gotoByTab(t);
+      };
+      el.appendChild(b);
+    });
+  }
+  function gotoByTab(t){
+    const S = SCREENS.find(s => s.tabs[s.on] === t);
+    if (S) show(S.id); else toast('info', t, '이 화면은 아직 HTML 시안에 없습니다.');
+  }
+  $('#tabPrev').onclick = () => { const i = SCREENS.indexOf(cur); show(SCREENS[Math.max(0,i-1)].id); };
+  $('#tabNext').onclick = () => { const i = SCREENS.indexOf(cur); show(SCREENS[Math.min(SCREENS.length-1,i+1)].id); };
+
+  /* ════════ eSMART_01 통합결과조회 ════════ */
+  (function(){
+    const TESTS = [
+      ['C3711','AST(GOT)',0,40,'U/L',0],['C3721','ALT(GPT)',0,41,'U/L',0],['C3730','r-GTP',8,61,'U/L',0],
+      ['C2411','Total Bilirubin',0.2,1.2,'mg/dL',1],['B2580','Glucose(FBS)',70,99,'mg/dL',0],['C2210','BUN',8,23,'mg/dL',0],
+      ['C2270','Creatinine',0.7,1.2,'mg/dL',2],['C2441','Total Cholesterol',0,199,'mg/dL',0],['C2443','Triglyceride',0,149,'mg/dL',0],
+      ['C2442','HDL-Cholesterol',40,60,'mg/dL',0],['C2444','LDL-Cholesterol',0,129,'mg/dL',0],['D3022','HbA1c',4.0,6.0,'%',1],
+      ['B1050','Hemoglobin',13.0,17.0,'g/dL',1],['B1040','WBC',4.0,10.0,'10³/µL',1],['B1060','Platelet',150,400,'10³/µL',0],
+      ['C4511','CRP',0,0.5,'mg/dL',2],['C2200','Uric acid',3.4,7.0,'mg/dL',1]
+    ];
+    const NAMES = ['신영덕','김민서','이준호','박지현','최서윤','정우진','강하은','조민재','윤서연','장도윤','임하준','한지우','오수아','서예준','신지호','권나연','황시우','안채원','송유진','류건우'];
+    const DOCS = ['이현석/내과','박정민/가정의학과','김소희/내분비내과','최영훈/소화기내과','정다은/신장내과'];
+    const SPEC = ['Serum,EDTA W/B','Serum','EDTA W/B','Serum,Urine'];
+    const patients = NAMES.map((name, i) => {
+      const r = rng(i * 7919 + 13);
+      const gender = i === 0 ? 'M' : (r() > .5 ? 'M' : 'F');
+      const age = i === 0 ? 60 : 24 + Math.floor(r() * 58);
+      const by = 2026 - age - (r() > .6 ? 1 : 0);
+      const birth = i === 0 ? '660212' : `${String(by).slice(2)}${pad(1+Math.floor(r()*12))}${pad(1+Math.floor(r()*28))}`;
+      const recv = fmt(addDays(TODAY, -Math.floor(i / 3) - (i % 3 === 2 ? 1 : 0)));
+      const ing = i < 8 ? (i % 3 !== 2) : (i === 11);
+      const n = 12 + Math.floor(r() * 5);
+      const start = Math.floor(r() * (TESTS.length - n + 1));
+      const results = TESTS.slice(start, start + n).map((t, k) => {
+        const [code, item, lo, hi, unit, dec] = t;
+        if (ing && k >= n - 3) return { code, item, val:'진행중', ref:`${lo} ~ ${hi} ${unit}`, flag:'', date:'-' };
+        const x = r(); let v, flag = '';
+        if (x < .14) { v = hi * (1.15 + r() * 1.4); flag = 'H'; }
+        else if (x < .22 && lo > 0) { v = lo * (.55 + r() * .3); flag = 'L'; }
+        else { v = lo + (hi - lo) * (.15 + r() * .7); }
+        return { code, item, val: v.toFixed(dec), ref:`${lo} ~ ${hi} ${unit}`, flag, date: fmt(addDays(new Date(recv), 1 + Math.floor(r()*2))) };
+      });
+      return {
+        id: i, name, gender, age, birth, recv,
+        chart: i === 0 ? '123454' : String(100000 + Math.floor(r() * 899999)),
+        recvNo: i === 0 ? '230323' : String(230300 + i * 7),
+        rrn: `${birth}-${gender === 'M' ? (by >= 2000 ? 3 : 1) : (by >= 2000 ? 4 : 2)}******`,
+        doc: i === 0 ? '이현석/내과' : DOCS[Math.floor(r()*DOCS.length)],
+        spec: i === 0 ? 'Serum,EDTA W/B' : SPEC[Math.floor(r()*SPEC.length)],
+        specNo: i === 0 ? 'G038892' : 'G0' + (38892 + i * 113),
+        status: ing ? '검사중' : '완료', hasH: results.some(x => x.flag === 'H'), hasL: results.some(x => x.flag === 'L'), prev: r() > .35, results
+      };
+    });
+    const PERIODS = [['전체',null],['1일',0],['3일',-2],['1주일',-6],['1개월','m1'],['3개월','m3']];
+    const seg = $('#period');
+    PERIODS.forEach(([lbl]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = lbl; b.onclick = () => setPeriod(lbl); seg.appendChild(b); });
+    function setPeriod(lbl){
+      seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.textContent === lbl));
+      const v = PERIODS.find(p => p[0] === lbl)[1];
+      if (v === null) { $('#dFrom').value = ''; $('#dTo').value = ''; return; }
+      const from = typeof v === 'number' ? addDays(TODAY, v) : addMonths(TODAY, v === 'm1' ? -1 : -3);
+      $('#dFrom').value = fmt(from); $('#dTo').value = fmt(TODAY);
+    }
+    ['dFrom','dTo'].forEach(id => $('#'+id).addEventListener('input', () => seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed','false'))));
+    setPeriod('전체');
+    $('#btnMore').onclick = () => { const row = $('#moreRow'); row.hidden = !row.hidden; $('#btnMore').setAttribute('aria-expanded', !row.hidden); };
+    let filtered = patients.slice(), sortDir = 0, selId = 0;
+    function applyFilter(){
+      const name = $('#fName').value.trim(), birth = $('#fBirth').value.trim(), st = $('#fStatus').value, chart = $('#fChart').value.trim(), flag = $('#fFlag').value, from = $('#dFrom').value, to = $('#dTo').value;
+      filtered = patients.filter(p => (!name || p.name.includes(name)) && (!birth || p.birth.startsWith(birth)) && (!st || p.status === st) && (!chart || p.chart.includes(chart)) && (!flag || (flag === 'abn') === (p.hasH || p.hasL)) && (!from || p.recv >= from) && (!to || p.recv <= to));
+      if (!filtered.some(p => p.id === selId)) selId = filtered.length ? filtered[0].id : null;
+      renderPatients(); renderDetail();
+    }
+    $('#searchForm').addEventListener('submit', e => { e.preventDefault(); applyFilter(); toast('info', '조회 완료', `수진자 ${filtered.length}명을 조회했습니다.`); });
+    $('#btnReset').onclick = () => { ['fName','fBirth','fChart'].forEach(id => $('#'+id).value = ''); $('#fStatus').value = ''; $('#fFlag').value = ''; $('#dateType').selectedIndex = 0; setPeriod('전체'); sortDir = 0; applyFilter(); };
+    $('#sortName').onclick = () => { sortDir = sortDir === 1 ? -1 : 1; renderPatients(); };
+    const stIcon = p => `<span class="st ${p.hasH?'h':''} ${p.hasL?'l':''}" aria-label="${p.hasH||p.hasL?'이상결과 있음':'이상결과 없음'}"><i class="u"></i><i class="d"></i></span>`;
+    function renderPatients(){
+      let rows = filtered.slice();
+      if (sortDir) rows.sort((a,b) => a.name.localeCompare(b.name, 'ko') * sortDir);
+      $('#sortName .ms').textContent = sortDir === 1 ? 'arrow_upward' : sortDir === -1 ? 'arrow_downward' : 'swap_vert';
+      $('#cnt').textContent = rows.length;
+      const body = $('#pBody');
+      if (!rows.length) { body.innerHTML = '<tr><td colspan="9" style="height:160px;color:var(--gray-500)">조회 결과가 없습니다. 검색 조건을 바꿔 다시 조회해 주세요.</td></tr>'; return; }
+      body.innerHTML = rows.map(p => `<tr data-id="${p.id}" class="${p.id===selId?'sel':''}"><td>${p.recv.slice(5)}</td><td>${p.name}</td><td>${p.chart}</td><td>${p.gender}</td><td>${p.age}</td><td>${p.birth}</td><td>${p.prev?'<span class="ms ic" title="이전결과 보기">content_paste_search</span>':'<span class="fg-muted">-</span>'}</td><td>${stIcon(p)}</td><td><span class="chip ${p.status==='완료'?'done':'ing'}">${p.status}</span></td></tr>`).join('');
+      body.querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = e => {
+        if (e.target.classList.contains('ic')) { toast('info','이전결과', `${patients[+tr.dataset.id].name}님의 이전 검사결과 화면으로 이동합니다. (샘플)`); return; }
+        selId = +tr.dataset.id; renderPatients(); renderDetail();
+      });
+    }
+    function renderDetail(){
+      const p = patients.find(x => x.id === selId), dt = $('#dt'), body = $('#rBody');
+      $('#chkAll').checked = false;
+      if (!p) { dt.innerHTML = ''; body.innerHTML = '<tr><td colspan="8" style="height:160px;color:var(--gray-500)">왼쪽 목록에서 수진자를 선택해 주세요.</td></tr>'; return; }
+      const cells = [['수진자명',p.name],['접수일자',p.recv],['접수번호',p.recvNo],['주민번호',p.rrn],['의사/진료과',p.doc],['성별',p.gender],['나이',p.age],['검체',p.spec],['검체번호',p.specNo],['병원명','홍당무병원'],['차트번호',p.chart],['병원코드','9800024']];
+      let html = '';
+      for (let i = 0; i < cells.length; i += 3) html += '<tr>' + cells.slice(i,i+3).map(([k,v]) => `<th>${k}</th><td>${v}</td>`).join('') + '</tr>';
+      html += `<tr><th>비고</th><td colspan="5">${p.status==='검사중'?'일부 항목 검사 진행 중':''}</td></tr>`;
+      dt.innerHTML = html;
+      body.innerHTML = p.results.map((r, k) => {
+        const cls = r.flag === 'H' ? 'fg-red' : r.flag === 'L' ? 'fg-blue' : r.val === '진행중' ? 'fg-muted' : '';
+        const chip = r.flag === 'H' ? '<span class="chip high">High</span>' : r.flag === 'L' ? '<span class="chip low">Low</span>' : '-';
+        return `<tr><td><input type="checkbox" class="chk rchk" aria-label="${r.item} 선택" ${k<2?'checked':''}></td><td>${r.code}</td><td class="l">${r.item}</td><td class="${cls}">${r.val}</td><td>${r.ref}</td><td>${chip}</td><td>${r.date}</td><td><span class="ms ic" title="결과 이력">content_paste_search</span></td></tr>`;
+      }).join('');
+      body.querySelectorAll('tr').forEach(tr => tr.onclick = e => { if (e.target.type !== 'checkbox' && !e.target.classList.contains('ic')) { const c = tr.querySelector('.rchk'); c.checked = !c.checked; } syncAll(); });
+    }
+    function syncAll(){ const all = [...document.querySelectorAll('.rchk')]; $('#chkAll').checked = all.length && all.every(c => c.checked); }
+    $('#chkAll').onchange = e => document.querySelectorAll('.rchk').forEach(c => c.checked = e.target.checked);
+    document.querySelectorAll('#scr-eSMART_01 [data-act]').forEach(b => b.onclick = () => {
+      const p = patients.find(x => x.id === selId); if (!p) return;
+      const n = document.querySelectorAll('.rchk:checked').length, a = b.dataset.act;
+      if ((a === '출력' || a === '엑셀') && !n) { toast('warn','선택한 항목이 없습니다','출력하거나 내려받을 검사항목을 먼저 선택해 주세요.'); return; }
+      const msg = { 이력:['info','검사결과이력조회',`${p.name}님의 검사결과 이력 팝업이 열립니다. (샘플)`], 추가:['info','추가검사',`${p.name}님 추가검사 의뢰 팝업이 열립니다. (샘플)`], 오더:['info','오더의뢰지',`${p.name}님 오더의뢰지를 불러옵니다. (샘플)`], 출력:['ok','결과지 출력',`선택한 ${n}개 항목의 결과지를 출력합니다. (샘플)`], 엑셀:['ok','엑셀결과받기',`선택한 ${n}개 항목을 엑셀로 내려받습니다. (샘플)`] }[a];
+      toast(...msg);
+    });
+    applyFilter();
+  })();
+
+  const start = (location.hash || '').slice(1);
+  show(SCREENS.some(s => s.id === start) ? start : 'eSMART_01');
+})();
+</script>
+
+</body>
+</html>
