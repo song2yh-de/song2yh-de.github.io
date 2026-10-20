@@ -309,9 +309,9 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
 .sf15 .srow>.inp,.sf15 .srow>.sel,.sf15 .srow>.date{flex:1;min-width:0}
 .sf15 .date .inp{width:100%}
 /* eSMART_01 전용 */
-.results{flex:1;min-height:0;display:flex;gap:10px;padding:8px 16px 0;background:var(--neutral-50)}
+.results{flex:1;min-height:0;display:flex;gap:10px;padding:8px 16px 16px;background:var(--neutral-50)}
 .left{width:850px;flex:none;display:flex;flex-direction:column;min-height:0;border:1px solid var(--border-default);border-radius:8px 8px 0 0;overflow:hidden}
-.right{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;min-height:0;background:var(--white);border:1px solid var(--border-default);border-bottom:0;border-radius:8px 8px 0 0;overflow:hidden}
+.right{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;min-height:0;background:var(--white);border:1px solid var(--border-default);border-radius:8px 8px 0 0;overflow:hidden}
 .search{background:var(--white);border-bottom:1px solid var(--border-default);padding:16px 24px;display:flex;flex-direction:column;gap:20px}
 .filters{display:flex;flex-direction:column;gap:10px}
 .frow{display:flex;gap:40px;align-items:center;height:28px}
@@ -363,8 +363,6 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
 @keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}*{transition:none!important}}
 </style>
-</head>
-<body>
 
 <div class="viewer">
   <div class="viewer-head">
@@ -629,6 +627,27 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
   new MutationObserver(() => wrapGrids(stage)).observe(stage, {subtree:true, childList:true});
 
   /* ── 패널 상단 라운드 (Figma 기준: 위쪽 8px, 위에 붙은 패널·옆에 붙은 안쪽 모서리는 직각) ── */
+  /* 화면의 모든 독립 영역(흰 패널)에 4면 border 보장 — 영역 내부 패널은 바깥 테두리와 겹치는 면만 제거 */
+  function borderPanels(scr){
+    if (!scr || scr.dataset.bordered || !scr.offsetWidth) return;
+    const sel = '.pn,.col,.row,.sform,.left,.right';
+    const isWhite = el => { const cs = getComputedStyle(el); return cs.backgroundColor === 'rgb(255, 255, 255)' && el.offsetWidth >= 250 && el.offsetHeight >= 60; };
+    const cands = [...scr.querySelectorAll(sel)].filter(isWhite);
+    const top = cands.filter(el => !cands.some(o => o !== el && o.contains(el)));
+    const k = stage.getBoundingClientRect().width / 1920, tol = 2 * k;
+    const SIDES = ['Top','Right','Bottom','Left'];
+    top.forEach(el => {
+      const cs = getComputedStyle(el);
+      SIDES.forEach(sd => { if (!parseFloat(cs['border' + sd + 'Width'])) el.style['border' + sd] = '1px solid var(--border-default)'; });
+      const o = el.getBoundingClientRect(), bw = k;
+      el.querySelectorAll('.pn,.col').forEach(ch => {
+        const c = ch.getBoundingClientRect(), ccs = getComputedStyle(ch);
+        const edge = { Top: Math.abs(c.top - (o.top + bw)), Right: Math.abs(o.right - bw - c.right), Bottom: Math.abs(o.bottom - bw - c.bottom), Left: Math.abs(c.left - (o.left + bw)) };
+        SIDES.forEach(sd => { if (edge[sd] <= tol && parseFloat(ccs['border' + sd + 'Width'])) ch.style['border' + sd + 'Width'] = '0'; });
+      });
+    });
+    scr.dataset.bordered = '1';
+  }
   function roundPanels(scr){
     if (!scr || scr.dataset.rounded || !scr.offsetWidth) return;
     const sel = '.pn,.col,.row,.sform,.left,.right';
@@ -788,12 +807,12 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
           ${H.pager(2)}
         </div>
         <div class="split" role="separator" aria-label="영역 크기 조절"></div>
-        <div class="col grow" style="gap:0">
+        <div class="col grow" style="gap:6px">
           <div class="pn nob" style="height:354px;flex:none">
             ${H.tit('고객검사코드매칭')}
             <div id="map03" style="flex:1;min-height:0;display:flex;flex-direction:column"></div>
           </div>
-          <div class="pn nob grow" style="border-top:6px solid var(--neutral-50)">
+          <div class="pn nob grow">
             ${H.tit('병원추가등록정보')}
             ${H.grid([{h:'검사코드'},{h:'참조코드'},{h:'참조코드명'},{h:'참조정보값'}], [['W9028_1','TA0025','가족관계','본인'],['W9028_1','TA0021','흡연여부','N'],['W9028_1','TA0028','공복여부','Y'],['N3030','TA0027','채취시간','09:30'],['N3030','TA0029','신장','172'],['F172','TA0030','체중','64']], {nosel:1})}
           </div>
@@ -1393,7 +1412,7 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
     document.querySelectorAll('[data-screen]').forEach(x => x.hidden = x.id !== 'scr-' + S.id);
     SCREENS.forEach(x => { if (x.ov) x.ov.hidden = !(x === S && x.ovOpen); });
     if (S.onShow) S.onShow();
-    requestAnimationFrame(() => roundPanels(document.getElementById('scr-' + S.id)));
+    requestAnimationFrame(() => { const sc = document.getElementById('scr-' + S.id); borderPanels(sc); roundPanels(sc); });
     snav.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.id === S.id));
     $('#vTitle').textContent = `${S.id} ${nameOf(S)}`;
     renderTabs();
@@ -1531,6 +1550,5 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
   show(SCREENS.some(s => s.id === start) ? start : 'eSMART_01');
 })();
 </script>
-
 </body>
 </html>
