@@ -1200,8 +1200,8 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
           </div>
         </div>
         <span style="width:10px;flex:none"></span>
-        <div class="col" style="width:802px;flex:none">
-          <div class="row" style="height:512px;flex:none;gap:10px;background:var(--white);padding:16px">
+        <div class="col" style="width:802px;flex:none;background:var(--white);border:1px solid var(--border-default);overflow:hidden">
+          <div class="row" style="height:511px;flex:none;gap:10px;padding:16px;border-bottom:1px solid var(--border-default)">
             <div class="col" style="width:520px;flex:none;gap:8px">
               <div class="lh">${H.tit('검사항목')}${H.btn('삭제','danger-out','del15')}</div>
               <div id="sel15" class="col grow"></div>
@@ -1212,11 +1212,11 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
             </div>
           </div>
           <div class="row grow" style="gap:0">
-            <div class="pn nob" style="width:340px;flex:none;padding-bottom:0">
+            <div class="pn nob" style="width:340px;flex:none;padding-bottom:0;border-right:1px solid var(--border-default)">
               <div class="lh" style="min-height:24px">${H.tit('추가등록항목')}</div>
               ${H.grid([{h:'추가항목명',w:208,sort:1},{h:'참조값',sort:1}], [])}
             </div>
-            <div class="pn grow" style="padding-bottom:0">
+            <div class="pn grow" style="padding-bottom:0;border:0">
               <div class="lh">${H.tit('의뢰지/동의서')}<div class="acts">${H.btn('저장','primary','save')}<label class="btn btn-sec" style="cursor:pointer">파일 찾기<input type="file" hidden id="f15" multiple></label>${H.btn('삭제','danger-out','delfile15')}</div></div>
               <div id="file15" class="col grow"></div>
             </div>
