@@ -41,6 +41,8 @@ button{font-family:inherit;cursor:pointer}
 .viewer-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
 .viewer-head h1{margin:0;font-size:20px;font-weight:700;color:var(--brand-900);text-wrap:balance}
 .viewer-head p{margin:4px 0 0;font-size:13px;color:var(--text-secondary);line-height:1.5}
+.guide-link{margin-left:auto;margin-right:8px;font-size:13px;color:var(--brand-700);text-decoration:none;border:1px solid var(--brand-600);border-radius:4px;padding:6px 12px;background:var(--white)}
+.guide-link:hover{background:var(--brand-50)}
 .zoom{display:inline-flex;border:1px solid var(--gray-300);border-radius:4px;overflow:hidden;background:var(--white)}
 .zoom button{border:0;background:none;padding:6px 12px;font-size:13px;color:var(--gray-600)}
 .zoom button+button{border-left:1px solid var(--gray-300)}
@@ -370,6 +372,7 @@ table.grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:10
       <h1 id="vTitle">eSMART_01 통합결과조회</h1>
       <p>Figma 「화면 레이아웃」 페이지 순서대로 옮긴 HTML 시안. 그리드 행 선택, 체크박스, 영역탭, 페이지, 조회·초기화·삭제 확인 등이 동작하며 데이터는 모두 샘플.</p>
     </div>
+    <a class="guide-link" href="guide/">요청 가이드 문서 →</a>
     <div class="zoom" role="group" aria-label="화면 배율">
       <button type="button" id="zFit" aria-pressed="true">화면 맞춤</button>
       <button type="button" id="zActual" aria-pressed="false">실제 크기 1920</button>
